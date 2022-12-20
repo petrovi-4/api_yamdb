@@ -1,21 +1,29 @@
 """Модели приложения YaMDb"""
 from django.db import models
 
-from core.models import NameSlug
 
-
-class Category(NameSlug):
+class Category(models.Model):
     """Модель категории произведений"""
+    name = models.CharField(max_length=256)
+    slug = models.SlugField(max_length=50, unique=True)
 
-    class Meta(NameSlug.Meta):
+    def __str__(self):
+        return self.name
+
+    class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
 
 
-class Genre(NameSlug):
+class Genre(models.Model):
     """Модель жанра произведений"""
+    name = models.CharField(max_length=256)
+    slug = models.SlugField(max_length=50, unique=True)
 
-    class Meta(NameSlug.Meta):
+    def __str__(self):
+        return self.name
+
+    class Meta:
         verbose_name = 'Жанр'
         verbose_name_plural = 'Жанры'
 
@@ -24,7 +32,7 @@ class Title(models.Model):
     """Модель произведения"""
     name = models.CharField(max_length=256)
     year = models.IntegerField()
-    description = models.CharField(blank=True)
+    description = models.CharField(max_length=1024, blank=True)
     genre = models.ManyToManyField(Genre, related_name='titles')
     category = models.ForeignKey(
         Category,
