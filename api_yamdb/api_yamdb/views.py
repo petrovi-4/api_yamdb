@@ -1,6 +1,7 @@
 """View приложения YaMDb"""
 
 from rest_framework import filters, mixins, viewsets
+from rest_framework.pagination import PageNumberPagination
 
 from api_yamdb.models import Category, Genre, Title
 from api_yamdb.permissions import CustomAdminPermission
@@ -19,6 +20,7 @@ class CategoryViewSet(
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (CustomAdminPermission,)
+    pagination_class = PageNumberPagination
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
@@ -34,6 +36,7 @@ class GenreViewSet(
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     permission_classes = (CustomAdminPermission,)
+    pagination_class = PageNumberPagination
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
     lookup_field = 'slug'
@@ -44,3 +47,4 @@ class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
     permission_classes = (CustomAdminPermission,)
+    pagination_class = PageNumberPagination
