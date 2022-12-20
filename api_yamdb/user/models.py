@@ -16,7 +16,9 @@ class UserManager(BaseUserManager):
         if email is None:
             raise TypeError("Users must have an email address.")
 
-        user = self.model(username=username, email=self.normalize_email(email))
+        user = self.model(
+            username=username, email=self.normalize_email(email)
+        )
         user.save()
 
         return user
@@ -103,5 +105,22 @@ class User(AbstractUser):
             settings.SECRET_KEY,
             algorithm="HS256",
         )
-
         return token.decode("utf-8")
+
+
+class EmailCodes(models.Model):
+    id = models.AutoField(primary_key=True)
+    username = models.CharField(
+        max_length=150,
+        validators=[
+            RegexValidator(
+                regex=r"^[\w.@+-]+$",
+                message="Недопустимые символы в имени пользователя",
+            )
+        ],
+        verbose_name="Ник пользователя",
+    )
+    code = models.IntegerField()
+    email = models.EmailField(
+        max_length=254, verbose_name="Адрес электронной почты"
+    )

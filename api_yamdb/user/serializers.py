@@ -1,17 +1,28 @@
+import random
+
 from rest_framework import serializers
 
-from .models import User
+from .models import User, EmailCodes
 
 
-class RegistrationSerializer(serializers.ModelSerializer):
-    """ Сериализация регистрации пользователя и создания нового. """
-
-    confirmation_code = serializers.CharField(max_length=255, read_only=True)
-    token = serializers.CharField(max_length=255, read_only=True)
+class SendCodeSerializer(serializers.ModelSerializer):
+    """Сериализация нового пользователя и отправки кода."""
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'confirmation_code', 'token']
+        fields = ["username", "email"]
 
-    def create(self, validated_data):
-        return User.objects.create_user(**validated_data)
+
+class RegistrationSerializer(serializers.ModelSerializer):
+    """Сериализация регистрации пользователя и создания нового."""
+
+    class Meta:
+        model = User
+        fields = ["username", "email"]
+
+    # def create(self, validated_data):
+    #     print(1)
+    #     user = User.objects.get_or_create(
+    #         username=validated_data["username"], email=validated_data["email"]
+    #     )
+    #     return user.token
