@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'api_yamdb'
 ]
 
 MIDDLEWARE = [
@@ -57,6 +58,7 @@ WSGI_APPLICATION = 'api_yamdb.wsgi.application'
 
 
 # Database
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 DATABASES = {
     'default': {
