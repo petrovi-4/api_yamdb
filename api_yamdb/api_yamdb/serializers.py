@@ -43,6 +43,7 @@ class TitleSerializer(serializers.ModelSerializer):
             'id', 'name', 'year', 'rating', 'description', 'genre', 'category'
         )
         optional_fields = ('description',)
+        read_only_fields = ('rating',)
 
     def validate(self, data):
         if int(data['year']) > int(datetime.now().year):
