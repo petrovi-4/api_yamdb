@@ -37,9 +37,6 @@ class TitleSerializer(serializers.ModelSerializer):
         slug_field='slug'
     )
 
-    # genre = GenreSerializer(many=True)
-    # category = CategorySerializer()
-
     class Meta:
         model = Title
         fields = ('id', 'name', 'year', 'description', 'genre', 'category')
@@ -51,3 +48,8 @@ class TitleSerializer(serializers.ModelSerializer):
                 'Год не может быть больше нынешнего.'
             )
         return data
+
+    def to_representation(self, obj):
+        self.fields['genre'] = GenreSerializer(many=True)
+        self.fields['category'] = CategorySerializer()
+        return super().to_representation(obj)
