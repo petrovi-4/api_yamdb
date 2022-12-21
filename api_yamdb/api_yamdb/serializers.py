@@ -46,7 +46,9 @@ class TitleSerializer(serializers.ModelSerializer):
         read_only_fields = ('rating',)
 
     def validate(self, data):
-        if int(data['year']) > int(datetime.now().year):
+        title_year = int(data['year'])
+        current_year = int(datetime.now().year)
+        if title_year > current_year:
             raise serializers.ValidationError(
                 'Год не может быть больше нынешнего.'
             )
