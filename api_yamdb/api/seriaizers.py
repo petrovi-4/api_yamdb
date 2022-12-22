@@ -91,7 +91,7 @@ class TitleSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         title_year = int(data['year'])
-        current_year = int(datetime.now().year)
+        current_year = datetime.now().year
         if title_year > current_year:
             raise serializers.ValidationError(
                 'Год не может быть больше нынешнего.'
