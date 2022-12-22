@@ -4,7 +4,7 @@ from django.urls import include, path
 from django.views.generic import TemplateView
 from rest_framework.routers import DefaultRouter
 
-from api_yamdb.views import CategoryViewSet, GenreViewSet, TitleViewSet
+from api.views import CategoryViewSet, GenreViewSet, TitleViewSet
 
 router = DefaultRouter()
 router.register(r'categories', CategoryViewSet, basename='category')
