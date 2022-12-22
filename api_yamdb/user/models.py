@@ -1,7 +1,8 @@
-from django.contrib import admin
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
+
+from api_yamdb.user.managers import UserManager
 
 
 class User(AbstractUser):
@@ -39,7 +40,8 @@ class User(AbstractUser):
     role = models.CharField(
         max_length=100, verbose_name="Роль", choices=ROLES, default=USER
     )
-    confirmation_code = models.CharField(max_length=6, default='000000')
+    confirmation_code = models.CharField(max_length=6, default="000000")
+    objects = UserManager()
 
     def __str__(self):
         return self.username
@@ -55,4 +57,3 @@ class User(AbstractUser):
     @property
     def is_user(self):
         return self.role == self.USER
-
