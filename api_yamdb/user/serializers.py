@@ -3,15 +3,15 @@ from rest_framework import serializers
 from .models import User
 
 
-class RegistrationSerializer(serializers.ModelSerializer):
-    """ Сериализация регистрации пользователя и создания нового. """
-
-    confirmation_code = serializers.CharField(max_length=255, read_only=True)
-    token = serializers.CharField(max_length=255, read_only=True)
-
+class SendCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'email', 'confirmation_code', 'token']
+        fields = ("email", "username")
 
-    def create(self, validated_data):
-        return User.objects.create_user(**validated_data)
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("email", "username", "first_name", "last_name", "role", "bio")
+        read_only_fields = ("role",)
+
