@@ -13,4 +13,5 @@ urlpatterns = [
     path("auth/token/", get_jwt),
     path("users/me/", UsersViewSet.as_view()),
     path("", include(router.urls)),
+
 ]
