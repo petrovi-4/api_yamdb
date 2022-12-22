@@ -265,7 +265,7 @@ class Test05ReviewAPI:
             data=new_data
         )
         assert response.status_code == HTTPStatus.OK, (
-            'Проверьте, что PATCH-запрос пользователя с ролью `user` к '
+            'Проверьте, что PATCH-запрос пользователя с ролью `access` к '
             f'его собственному отзыву через `{url_template}` возвращает ответ '
             'со статусом 200.'
         )
@@ -305,7 +305,7 @@ class Test05ReviewAPI:
             data=new_data
         )
         assert response.status_code == HTTPStatus.FORBIDDEN, (
-            'Проверьте, что PATCH-запрос пользователя с ролью `user` к '
+            'Проверьте, что PATCH-запрос пользователя с ролью `access` к '
             f'чужому отзыву через `{url_template}` возвращает ответ со '
             'статусом 403.'
         )
@@ -314,7 +314,7 @@ class Test05ReviewAPI:
             f'/api/v1/titles/{titles[0]["id"]}/reviews/{reviews[1]["id"]}/'
         )
         assert response.status_code == HTTPStatus.NO_CONTENT, (
-            'Проверьте, что DELETE-запрос пользователя с ролью `user` к '
+            'Проверьте, что DELETE-запрос пользователя с ролью `access` к '
             f'его собственному отзыву через `{url_template}` возвращает '
             'статус 204.'
         )
@@ -323,7 +323,7 @@ class Test05ReviewAPI:
         )
         test_data = response.json()['results']
         assert len(test_data) == len(reviews) - 1, (
-            'Проверьте, что DELETE-запрос пользователя с ролью `user` к его '
+            'Проверьте, что DELETE-запрос пользователя с ролью `access` к его '
             f'собственному отзыву через `{url_template}` удаляет отзыв.'
         )
 
@@ -331,7 +331,7 @@ class Test05ReviewAPI:
             f'/api/v1/titles/{titles[0]["id"]}/reviews/{reviews[2]["id"]}/'
         )
         assert response.status_code == HTTPStatus.FORBIDDEN, (
-            'Проверьте, что DELETE-запрос пользователя с ролью `user` к '
+            'Проверьте, что DELETE-запрос пользователя с ролью `access` к '
             f'чужому отзыву через `{url_template}` возвращает ответ со '
             'статусом 403.'
         )

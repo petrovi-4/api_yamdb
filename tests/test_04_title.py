@@ -312,7 +312,7 @@ class Test04TitleAPI:
                           'неавторизованного пользователя', titles,
                           HTTPStatus.UNAUTHORIZED)
         check_permissions(user_client, url, data,
-                          'пользователя с ролью `user`', titles,
+                          'пользователя с ролью `access`', titles,
                           HTTPStatus.FORBIDDEN)
         check_permissions(moderator_client, url, data, 'модератора',
                           titles, HTTPStatus.FORBIDDEN)

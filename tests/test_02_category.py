@@ -135,7 +135,7 @@ class Test02CategoryAPI:
         check_permissions(client, url, data, 'неавторизованного пользователя',
                           categories, HTTPStatus.UNAUTHORIZED)
         check_permissions(user_client, url, data,
-                          'пользователя с ролью `user`', categories,
+                          'пользователя с ролью `access`', categories,
                           HTTPStatus.FORBIDDEN)
         check_permissions(moderator_client, url, data, 'модератора',
                           categories, HTTPStatus.FORBIDDEN)

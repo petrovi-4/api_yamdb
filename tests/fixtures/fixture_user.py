@@ -9,7 +9,7 @@ def user_superuser(django_user_model):
         username='TestSuperuser',
         email='testsuperuser@yamdb.fake',
         password='1234567',
-        role='user',
+        role='access',
         bio='superuser bio'
     )
 
@@ -42,8 +42,8 @@ def user(django_user_model):
         username='TestUser',
         email='testuser@yamdb.fake',
         password='1234567',
-        role='user',
-        bio='user bio'
+        role='access',
+        bio='access bio'
     )
 
 

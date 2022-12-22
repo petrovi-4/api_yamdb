@@ -1,9 +1,9 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from .views import get_jwt, send_code, UsersViewSet, UserAdminViewSet
+from access.views import get_jwt, send_code, UsersViewSet, UserAdminViewSet
 
-app_name = "user"
+app_name = "access"
 
 router = DefaultRouter()
 router.register("users", UserAdminViewSet, basename="users")
