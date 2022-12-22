@@ -8,6 +8,11 @@ class SendCodeSerializer(serializers.ModelSerializer):
         model = User
         fields = ("email", "username")
 
+    def validate_username(self, value):
+        if value == "me":
+            raise serializers.ValidationError('Имя пользователя не может быть "me"')
+        return value
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

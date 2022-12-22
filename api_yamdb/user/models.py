@@ -56,5 +56,3 @@ class User(AbstractUser):
     def is_user(self):
         return self.role == self.USER
 
-
-admin.site.register(User)
