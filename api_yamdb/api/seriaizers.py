@@ -53,16 +53,18 @@ class TitleSerializer(serializers.ModelSerializer):
         return 0
 
     def validate(self, data):
+        request = self.context.get('request')
         title_year = int(data['year'])
         current_year = datetime.now().year
         if title_year > current_year:
             raise serializers.ValidationError(
                 'Год не может быть больше нынешнего.'
             )
-        if Title.objects.filter(name=data['name'], year=data['year']).exists():
-            raise serializers.ValidationError(
-                'Такой фильм уже есть в базе.'
-            )
+        if (request.method == 'POST'
+                and Title.objects.filter(
+                    name=data['name'], year=data['year']
+                ).exists()):
+            raise serializers.ValidationError('Такой фильм уже есть в базе.')
         return data
 
     def to_representation(self, obj):
