@@ -7,7 +7,7 @@ from rest_framework.pagination import (LimitOffsetPagination,
 from api.models import Category, Genre, Review, Title
 from api.seriaizers import (CategorySerializer, CommentSerializer,
                             GenreSerializer, ReviewSerializer, TitleSerializer)
-from access.permissions import IsAdminOrReadOnly
+from user.permissions import IsAdminOrReadOnly
 
 
 class CategoryViewSet(

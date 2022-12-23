@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from access.models import User
+from user.models import User
 
 
 class SendCodeSerializer(serializers.ModelSerializer):

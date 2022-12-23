@@ -32,7 +32,7 @@ def get_jwt(request):
     user = User.objects.get(username=username)
     if check_password(confirmation_code, user.confirmation_code):
         token = AccessToken.for_user(user)
-        return Response({"access": str(token)})
+        return Response({"user": str(token)})
 
     return Response("Код подтверждения неверен", status=status.HTTP_400_BAD_REQUEST)
 

@@ -110,7 +110,7 @@ class Test00UserRegistration:
         }
 
         response = client.post(self.url_signup, data=valid_data)
-        outbox_after = mail.outbox  # email outbox after access create
+        outbox_after = mail.outbox  # email outbox after user create
 
         assert response.status_code != HTTPStatus.NOT_FOUND, (
             f'Эндпоинт `{self.url_signup}` не найден. Проверьте настройки '
@@ -188,7 +188,7 @@ class Test00UserRegistration:
             'должен быть создан новый пользователь.'
         )
 
-        # Test confirmation code not sent to access after admin registers him
+        # Test confirmation code not sent to user after admin registers him
         assert len(outbox_after) == outbox_before_count, (
             'При POST-запросе, отправленном на эндпоинт '
             f'`{self.url_admin_create_user}` и содержащим корректные данные, '

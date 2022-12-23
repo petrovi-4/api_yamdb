@@ -118,7 +118,7 @@ class Test03GenreAPI:
         check_permissions(client, url, data, 'неавторизованного пользователя',
                           genres, HTTPStatus.UNAUTHORIZED)
         check_permissions(user_client, url, data,
-                          'пользователя с ролью `access`', genres,
+                          'пользователя с ролью `user`', genres,
                           HTTPStatus.FORBIDDEN)
         check_permissions(moderator_client, url, data, 'модератора',
                           genres, HTTPStatus.FORBIDDEN)

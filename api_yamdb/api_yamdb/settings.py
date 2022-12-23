@@ -15,7 +15,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 # User model
-AUTH_USER_MODEL = "access.User"
+AUTH_USER_MODEL = "user.User"
 
 # Application definition
 
@@ -30,7 +30,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'django_filters',
     'api',
-    'access',
+    'user',
 ]
 
 MIDDLEWARE = [

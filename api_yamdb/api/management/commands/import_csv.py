@@ -3,7 +3,7 @@ import glob, os
 
 from django.core.management.base import BaseCommand, CommandError
 
-from api_yamdb.models import Category, Genre, Title
+from api.models import Category, Genre, Title
 
 
 class Command(BaseCommand):

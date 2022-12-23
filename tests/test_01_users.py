@@ -13,7 +13,7 @@ class Test01UserAPI:
         (
             {
                 'username': 'TestUser_2',
-                'role': 'access',
+                'role': 'user',
                 'email': 'testuser2@yamdb.fake'
             },
             ''
@@ -29,7 +29,7 @@ class Test01UserAPI:
     PATCH_DATA = {
         'first_name': 'New User Firstname',
         'last_name': 'New User Lastname',
-        'bio': 'new access bio'
+        'bio': 'new user bio'
     }
 
     def test_01_users_not_authenticated(self, client):
@@ -156,7 +156,7 @@ class Test01UserAPI:
 
         no_email_data = {
             'username': 'TestUser_noemail',
-            'role': 'access'
+            'role': 'user'
         }
         response = admin_client.post('/api/v1/users/', data=no_email_data)
         assert response.status_code == HTTPStatus.BAD_REQUEST, (
@@ -166,7 +166,7 @@ class Test01UserAPI:
 
         no_username_data = {
             'email': 'valid_email@yamdb.fake',
-            'role': 'access'
+            'role': 'user'
         }
         response = admin_client.post('/api/v1/users/', data=no_username_data)
         assert response.status_code == HTTPStatus.BAD_REQUEST, (
@@ -176,7 +176,7 @@ class Test01UserAPI:
 
         duplicate_email = {
             'username': 'TestUser_duplicate',
-            'role': 'access',
+            'role': 'user',
             'email': admin.email
         }
         response = admin_client.post('/api/v1/users/', data=duplicate_email)
@@ -188,7 +188,7 @@ class Test01UserAPI:
 
         duplicate_username = {
             'username': admin.username,
-            'role': 'access',
+            'role': 'user',
             'email': 'valid_test_email@yamdb.fake'
         }
         response = admin_client.post('/api/v1/users/', data=duplicate_username)
@@ -215,10 +215,10 @@ class Test01UserAPI:
             'новый пользователь.'
         )
         if msg_modifier:
-            assert new_user.first().role == 'access', (
+            assert new_user.first().role == 'user', (
                 'Когда администратор создаёт пользователя через POST-запрос к '
                 '`/api/v1/users/` и не указывает роль для нового пользователя '
-                '- пользователю должна присваиваться роль `access`.'
+                '- пользователю должна присваиваться роль `user`.'
             )
 
     def test_05_03_users_post_response_has_data(self, admin_client):
@@ -252,7 +252,7 @@ class Test01UserAPI:
                                              django_user_model):
         valid_data = {
             'username': 'TestUser_3',
-            'role': 'access',
+            'role': 'user',
             'email': 'testuser3@yamdb.fake'
         }
         response = user_superuser_client.post(
@@ -387,7 +387,7 @@ class Test01UserAPI:
             f'/api/v1/users/{user.username}/', data=self.PATCH_DATA
         )
         assert response.status_code == HTTPStatus.FORBIDDEN, (
-            'Проверьте, что PATCH-запрос пользователя с ролью `access` к '
+            'Проверьте, что PATCH-запрос пользователя с ролью `user` к '
             '`/api/v1/users/{username}/` возвращает ответ со статусом 403.'
         )
 
@@ -395,7 +395,7 @@ class Test01UserAPI:
             django_user_model.objects.filter(username=user.username).first()
         )
         self.check_user_data_not_changed_with_patch(
-            user, 'пользователя с ролью `access`'
+            user, 'пользователя с ролью `user`'
         )
 
     def test_07_05_users_username_put_not_allowed(self, admin_client, user):
@@ -438,11 +438,11 @@ class Test01UserAPI:
         users_cnt = django_user_model.objects.count()
         response = user_client.delete(f'/api/v1/users/{user.username}/')
         assert response.status_code == HTTPStatus.FORBIDDEN, (
-            'Проверьте, что DELETE-запрос пользователя с ролью `access` к '
+            'Проверьте, что DELETE-запрос пользователя с ролью `user` к '
             '`/api/v1/users/{username}/` возвращает ответ со статусом 403.'
         )
         assert django_user_model.objects.count() == users_cnt, (
-            'Проверьте, что DELETE-запрос пользователя с ролью `access` к'
+            'Проверьте, что DELETE-запрос пользователя с ролью `user` к'
             '`/api/v1/users/{username}/` не удаляет пользователя.'
         )
 
@@ -532,13 +532,13 @@ class Test01UserAPI:
                                                           user,
                                                           django_user_model):
         data = {
-            'first_name': 'New access first name',
-            'last_name': 'New access last name',
-            'bio': 'new access bio',
+            'first_name': 'New user first name',
+            'last_name': 'New user last name',
+            'bio': 'new user bio',
         }
         response = user_client.patch('/api/v1/users/me/', data=data)
         assert response.status_code == HTTPStatus.OK, (
-            'Проверьте, что PATCH-запрос пользователя с ролью `access` к '
+            'Проверьте, что PATCH-запрос пользователя с ролью `user` к '
             '`/api/v1/users/me/` возвращает ответ со статусом 200.'
         )
 

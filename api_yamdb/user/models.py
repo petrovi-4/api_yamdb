@@ -7,7 +7,7 @@ from django.db import models
 class User(AbstractUser):
     ADMIN = "admin"
     MODERATOR = "moderator"
-    USER = "access"
+    USER = "user"
     ROLES = (
         (ADMIN, "Администратор"),
         (MODERATOR, "Модератор"),

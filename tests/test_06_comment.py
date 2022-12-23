@@ -48,7 +48,7 @@ class Test06CommentAPI:
             data=data
         )
         assert response.status_code == HTTPStatus.BAD_REQUEST, (
-            'Если POST-запрос пользователя с ролью `access` к '
+            'Если POST-запрос пользователя с ролью `user` к '
             f'`{url}` содержит некорректные данные - должен вернуться ответ '
             'со статусом 400.'
         )
@@ -172,7 +172,7 @@ class Test06CommentAPI:
         )
         data = response.json()
         assert data.get('text') == new_data['text'], (
-            'Проверьте, что PATCH-запрос пользователя с ролью `access` к '
+            'Проверьте, что PATCH-запрос пользователя с ролью `user` к '
             f'его собственному комментарию через `{url}` возвращает '
             'измененный комментарий. Сейчас поля `text` нет в ответе или оно '
             'содержит некорректное значение.'
@@ -191,7 +191,7 @@ class Test06CommentAPI:
         )
         data = response.json()
         assert data.get('text') == new_data['text'], (
-            'Проверьте, что PATCH-запрос пользователя с ролью `access` к его '
+            'Проверьте, что PATCH-запрос пользователя с ролью `user` к его '
             f'собственному комментарию через `{url}` изменяет этот '
             'комментарий.'
         )
@@ -205,7 +205,7 @@ class Test06CommentAPI:
             data=new_data
         )
         assert response.status_code == HTTPStatus.FORBIDDEN, (
-            'Проверьте, что PATCH-запрос пользователя с ролью `access` к '
+            'Проверьте, что PATCH-запрос пользователя с ролью `user` к '
             'чужому комментарию через `{url}` возвращает ответ со статусом '
             '403.'
         )
@@ -218,7 +218,7 @@ class Test06CommentAPI:
             )
         )
         assert response.status_code == HTTPStatus.NO_CONTENT, (
-            'Проверьте, что DELETE-запрос пользователя с ролью `access` к '
+            'Проверьте, что DELETE-запрос пользователя с ролью `user` к '
             f'его собственному комментарию через `{url}` возвращает ответ со '
             'статусом 204.'
         )
@@ -230,7 +230,7 @@ class Test06CommentAPI:
             )
         )
         assert response.status_code == HTTPStatus.NOT_FOUND, (
-            'Проверьте, что DELETE-запрос пользователя с ролью `access` к '
+            'Проверьте, что DELETE-запрос пользователя с ролью `user` к '
             f'его собственному комментарию через `{url}` удаляет этот '
             'комментарий.'
         )
@@ -243,7 +243,7 @@ class Test06CommentAPI:
             )
         )
         assert response.status_code == HTTPStatus.FORBIDDEN, (
-            'Проверьте, что DELETE-запрос пользователя с ролью `access` к '
+            'Проверьте, что DELETE-запрос пользователя с ролью `user` к '
             f'чужому комментарию через `{url}` возвращает ответ со статусом '
             '403.'
         )
