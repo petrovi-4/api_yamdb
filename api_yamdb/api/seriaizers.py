@@ -47,9 +47,9 @@ class TitleSerializer(serializers.ModelSerializer):
         read_only_fields = ('rating',)
 
     def get_rating(self, obj):
-        reviews = Review.objects.filter(title=obj)
-        if reviews.exists():
-            return reviews.aggregate(Avg('score'))
+        # reviews = Review.objects.filter(title=obj)
+        # if reviews.exists():
+        #     return reviews.aggregate(Avg('score'))
         return 0
 
     def validate(self, data):
@@ -58,6 +58,10 @@ class TitleSerializer(serializers.ModelSerializer):
         if title_year > current_year:
             raise serializers.ValidationError(
                 'Год не может быть больше нынешнего.'
+            )
+        if Title.objects.filter(name=data['name'], year=data['year']).exists():
+            raise serializers.ValidationError(
+                'Такой фильм уже есть в базе.'
             )
         return data
 

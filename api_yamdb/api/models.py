@@ -2,8 +2,6 @@
 
 from django.db import models
 
-from user.models import User
-
 
 class Category(models.Model):
     """Модель категории произведений"""
@@ -63,3 +61,11 @@ class GenreTitle(models.Model):
     """Модель для связи жанров и произведений."""
     genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
     title = models.ForeignKey(Title, on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ['id']
+        verbose_name = 'Связь'
+        verbose_name_plural = 'Связи'
+
+    def __str__(self):
+        return f'{self.genre} {self.title}'
