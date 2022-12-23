@@ -1,6 +1,5 @@
 """Модели приложения YaMDb"""
 
-from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 from user.models import User
@@ -64,64 +63,3 @@ class GenreTitle(models.Model):
     """Модель для связи жанров и произведений."""
     genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
     title = models.ForeignKey(Title, on_delete=models.CASCADE)
-
-
-class Review(models.Model):
-    title = models.ForeignKey(
-        Title,
-        on_delete=models.CASCADE,
-        related_name='reviews',
-        verbose_name='Произведение',
-    )
-    text = models.TextField(verbose_name='Текст')
-    author = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='reviews',
-        verbose_name='Автор',
-    )
-    score = models.SmallIntegerField(
-        validators=[
-            MinValueValidator(0),
-            MaxValueValidator(10),
-        ],
-        verbose_name='Оценка',
-    )
-    pub_date = models.DateTimeField(
-        verbose_name='Время добавления', auto_now_add=True
-    )
-
-    def __str__(self):
-        return f'Оценка {self.author.username} на {self.title.name}'
-
-    class Meta:
-        ordering = ['-pub_date']
-        verbose_name = ('Обзор',)
-        verbose_name_plural = 'Обзоры'
-
-        constraints = [
-            models.UniqueConstraint(
-                fields=('title', 'author'), name='unique_review'
-            )
-        ]
-
-
-class Comment(models.Model):
-    text = models.TextField(verbose_name='Текс')
-    author = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='comments',
-        verbose_name='Ревью',
-    )
-    pub_date = models.DateTimeField(
-        verbose_name='Время добавления', auto_now_add=True
-    )
-
-    def __str__(self):
-        return f'Оценка {self.author.username} на {self.review.title.name}'
-
-    class Meta:
-        ordering = ['-pub_date']
-        verbose_name = 'Комментарий'
-        verbose_name_plural = 'Комментарии'
