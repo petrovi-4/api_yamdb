@@ -7,9 +7,6 @@ from django.core.management.base import BaseCommand
 
 from api.models import Category, Genre, GenreTitle, Title
 
-# file_name = os.path.basename(file)
-# file_path = os.path.realpath(file)
-
 DATA_DIR = os.path.join(settings.BASE_DIR, 'static', 'data')
 
 FILE_MODEL = {
@@ -51,4 +48,3 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         for file, model in FILE_MODEL.items():
             self.upload_csv(file_name=file, model=model)
-
