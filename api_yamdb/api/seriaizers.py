@@ -54,9 +54,9 @@ class TitleSerializer(serializers.ModelSerializer):
         read_only_fields = ('rating',)
 
     def get_rating(self, obj):
-        # reviews = Review.objects.filter(title=obj)
-        # if reviews.exists():
-        #     return reviews.aggregate(Avg('score'))
+        reviews = Review.objects.filter(title=obj)
+        if reviews.exists():
+            return reviews.aggregate(Avg('score'))
         return 0
 
     def validate(self, data):
