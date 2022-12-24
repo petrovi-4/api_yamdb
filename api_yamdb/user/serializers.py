@@ -25,10 +25,10 @@ class SendCodeSerializer(serializers.Serializer):
         user = data.get("username", False)
         if user.lower() == "me":
             raise serializers.ValidationError("Username 'me' is not valid")
-        if re.search(r'^[\w.@+-]+\z$', user) is None:
+        if re.search(r"^[\w.@+-]+\z$", user) is None:
             raise ValidationError(
-                (f'Не допустимые символы <{user}> в нике.'),
-                params={'value': user},
+                (f"Не допустимые символы <{user}> в нике."),
+                params={"value": user},
             )
         if errors:
             raise serializers.ValidationError(errors)
@@ -74,5 +74,15 @@ class CheckConfirmationCodeSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("email", "username", "first_name", "last_name", "role", "bio")
-        read_only_fields = ("role",)
+        fields = (
+            'username', 'email', 'first_name',
+            'last_name', 'bio', 'role')
+
+
+class IsNotAdminUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            'username', 'email', 'first_name',
+            'last_name', 'bio', 'role')
+        read_only_fields = ('role',)

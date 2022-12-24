@@ -6,6 +6,7 @@ from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from rest_framework import status, permissions, viewsets, filters
 from rest_framework.decorators import api_view, permission_classes, action
+from rest_framework.filters import SearchFilter
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -15,7 +16,8 @@ from .models import User
 from .permissions import IsAdmin
 from .serializers import (
     UserSerializer,
-    CheckConfirmationCodeSerializer, SendCodeSerializer,
+    CheckConfirmationCodeSerializer,
+    SendCodeSerializer, IsNotAdminUserSerializer,
 )
 
 
@@ -40,14 +42,11 @@ def send_code(request):
         send_mail(
             "Code",
             confirmation_code,
-
             settings.EMAIL_HOST_USER,
             [email],
             fail_silently=False,
         )
-        return Response(
-            serializer.initial_data, status=status.HTTP_200_OK
-        )
+        return Response(serializer.initial_data, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -73,23 +72,49 @@ def get_jwt(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UsersViewSet(APIView):
-    """ViewSet для авторизированных пользователей"""
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (
+        IsAuthenticated,
+        IsAdmin,
+    )
+    lookup_field = "username"
+    filter_backends = (SearchFilter,)
+    search_fields = ("username",)
+    http_method_names = ["get", "post", "patch", "delete"]
 
-    @permission_classes([permissions.IsAuthenticated])
-    def get(self, request):
-        user = get_object_or_404(User, id=request.user.id)
-        serializer = UserSerializer(user)
-        return Response(serializer.data)
-
-    @permission_classes([permissions.IsAuthenticated])
-    def patch(self, request):
-        user = get_object_or_404(User, id=request.user.id)
-        serializer = UserSerializer(user, data=request.data, partial=True)
-        if serializer.is_valid():
+    @action(
+        methods=["GET", "PATCH"],
+        detail=False,
+        permission_classes=(IsAuthenticated,),
+        url_path="me",
+    )
+    def get_current_user_info(self, request):
+        serializer = UserSerializer(request.user)
+        if request.method == "PATCH":
+            if request.user.is_admin:
+                serializer = IsNotAdminUserSerializer(
+                    request.user, data=request.data, partial=True
+                )
+            else:
+                serializer = UserSerializer(
+                    request.user, data=request.data, partial=True
+                )
+            serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.data)
+
+    def patch(self, request):
+        if request.user.is_authenticated:
+            user = get_object_or_404(User, id=request.user.id)
+            serializer = UserSerializer(user, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response("Вы не авторизованы", status=status.HTTP_401_UNAUTHORIZED)
 
 
 class UserAdminViewSet(viewsets.ModelViewSet):
