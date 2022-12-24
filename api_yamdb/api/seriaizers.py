@@ -2,6 +2,7 @@ from datetime import datetime
 
 from .models import Category, Genre, Title, Comment, Review
 
+from django.db.models import Avg
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
