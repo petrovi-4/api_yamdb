@@ -22,6 +22,7 @@ from .serializers import (
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def send_code(request):
+    """Отправка кода для авторизации"""
     serializer = SendCodeSerializer(data=request.data)
     if serializer.is_valid():
         email = request.data.get("email", False)
@@ -52,6 +53,7 @@ def send_code(request):
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def get_jwt(request):
+    """Получение JWT токена"""
     username = request.data.get("username")
     confirmation_code = request.data.get("confirmation_code")
     serializer = CheckConfirmationCodeSerializer(data=request.data)
@@ -71,6 +73,8 @@ def get_jwt(request):
 
 
 class UsersViewSet(APIView):
+    """ViewSet для авторизированных пользователей"""
+
     @permission_classes([permissions.IsAuthenticated])
     def get(self, request):
         user = get_object_or_404(User, id=request.user.id)
@@ -88,6 +92,8 @@ class UsersViewSet(APIView):
 
 
 class UserAdminViewSet(viewsets.ModelViewSet):
+    """ViewSet для администраторов"""
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
     lookup_field = "username"
