@@ -25,7 +25,7 @@ class SendCodeSerializer(serializers.Serializer):
         user = data.get("username", False)
         if user.lower() == "me":
             raise serializers.ValidationError("Username 'me' is not valid")
-        if re.search(r'^[\w.@+-]+$', user) is None:
+        if re.search(r'^[\w.@+-]+\z$', user) is None:
             raise ValidationError(
                 (f'Не допустимые символы <{user}> в нике.'),
                 params={'value': user},

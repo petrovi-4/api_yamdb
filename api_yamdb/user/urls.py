@@ -9,8 +9,8 @@ router = DefaultRouter()
 router.register("users", UserAdminViewSet, basename="users")
 
 urlpatterns = [
-    path("v1/auth/sigup/", send_code),
-    path("v1/auth/token/", get_jwt),
-    path("v1/users/me/", UsersViewSet.as_view()),
+    path("auth/sigup/", send_code),
+    path("auth/token/", get_jwt),
+    path("users/me/", UsersViewSet.as_view()),
     path("", include(router.urls)),
 ]

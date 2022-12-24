@@ -1,10 +1,9 @@
 """Модели приложения YaMDb"""
-
+from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from user.models import User
-
+user = get_user_model()
 
 class Category(models.Model):
     """Модель категории произведений"""
@@ -74,7 +73,7 @@ class Review(models.Model):
     )
     text = models.TextField(verbose_name='Текст')
     author = models.ForeignKey(
-        User,
+        user,
         on_delete=models.CASCADE,
         related_name='reviews',
         verbose_name='Автор'
@@ -107,7 +106,7 @@ class Review(models.Model):
 class Comment(models.Model):
     text = models.TextField(verbose_name='Текст')
     author = models.ForeignKey(
-        User,
+        user,
         on_delete=models.CASCADE,
         related_name='comments',
         verbose_name='Автор'

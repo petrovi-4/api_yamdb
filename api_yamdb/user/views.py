@@ -40,6 +40,7 @@ def send_code(request):
         send_mail(
             "Code",
             confirmation_code,
+
             settings.EMAIL_HOST_USER,
             [email],
             fail_silently=False,

@@ -19,4 +19,6 @@ class IsAdmin(BasePermission):
 class IsAuthorOrModeratorOrAdmin(BasePermission):
     def has_object_permission(self, request, view, obj):
         user = request.user
-        return user.is_admin or user.is_staff or user.is_moderator or user == obj.author
+        if user.is_authenticated:
+            return user.is_admin or user.is_staff or user.is_moderator or user == obj.author
+        return False
