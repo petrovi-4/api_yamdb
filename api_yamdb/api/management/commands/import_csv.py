@@ -15,9 +15,9 @@ FILE_MODEL = {
     'genre.csv': Genre,
     'titles.csv': Title,
     'genre_title.csv': GenreTitle,
+    'users.csv': User,
     'review.csv': Review,
-    'comments.csv': Comment,
-    'users.csv': User
+    'comments.csv': Comment
 }
 
 

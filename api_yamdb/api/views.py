@@ -1,17 +1,13 @@
-from django.shortcuts import render, get_object_or_404
-from rest_framework import viewsets
-from rest_framework.pagination import LimitOffsetPagination
-from seriaizers import (
-    CommentSerializer,
-    ReviewSerializer,
-    GenreSerializer,
-    CategorySerializer,
-    TitleSerializer,
-)
+from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, mixins, viewsets
+from rest_framework.pagination import (
+    LimitOffsetPagination, PageNumberPagination)
 
-from ..user.permissions import IsAuthorOrModeratorOrAdmin, IsAdminOrReadOnly
-
-from .models import Review, Genre, Category, Title
+from api.seriaizers import (CategorySerializer, CommentSerializer,
+                            GenreSerializer, ReviewSerializer, TitleSerializer)
+from api.models import Category, Genre, Review, Title
+from user.permissions import IsAdminOrReadOnly, IsAuthorOrModeratorOrAdmin
 
 
 class CommentViewSet(viewsets.ModelViewSet):

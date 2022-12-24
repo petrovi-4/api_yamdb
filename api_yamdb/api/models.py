@@ -1,8 +1,9 @@
 """Модели приложения YaMDb"""
 
-from django.db import models
-from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
+
+from user.models import User
 
 
 class Category(models.Model):
@@ -63,28 +64,20 @@ class GenreTitle(models.Model):
     genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
     title = models.ForeignKey(Title, on_delete=models.CASCADE)
 
-    class Meta:
-        ordering = ['id']
-        verbose_name = 'Связь'
-        verbose_name_plural = 'Связи'
-
-    def __str__(self):
-        return f'{self.genre} {self.title}'
-
 
 class Review(models.Model):
     title = models.ForeignKey(
-        # to=Title,
+        Title,
         on_delete=models.CASCADE,
         related_name='reviews',
-        verbose_name='Произведение',
+        verbose_name='Произведение'
     )
     text = models.TextField(verbose_name='Текст')
     author = models.ForeignKey(
-        # to=
+        User,
         on_delete=models.CASCADE,
         related_name='reviews',
-        verbose_name='Автор',
+        verbose_name='Автор'
     )
     score = models.SmallIntegerField(
         validators=[
@@ -112,12 +105,18 @@ class Review(models.Model):
 
 
 class Comment(models.Model):
-    text = models.TextField(verbose_name='Текс')
+    text = models.TextField(verbose_name='Текст')
     author = models.ForeignKey(
-        # to=
+        User,
         on_delete=models.CASCADE,
         related_name='comments',
-        verbose_name='Ревью',
+        verbose_name='Автор'
+    )
+    review = models.ForeignKey(
+        Review,
+        on_delete=models.CASCADE,
+        related_name='comments',
+        verbose_name='Ревью'
     )
     pub_date = models.DateTimeField(
         verbose_name='Время добавления', auto_now_add=True
