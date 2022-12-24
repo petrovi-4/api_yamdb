@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from .models import Category, Genre, Title, Comment, Review
+from review.models import Category, Genre, Title, Comment, Review
 
 from django.db.models import Avg
 from django.contrib.auth import get_user_model

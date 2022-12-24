@@ -6,7 +6,7 @@ from rest_framework.pagination import (
 
 from api.seriaizers import (CategorySerializer, CommentSerializer,
                             GenreSerializer, ReviewSerializer, TitleSerializer)
-from api.models import Category, Genre, Review, Title
+from review.models import Category, Genre, Review, Title
 from user.permissions import IsAdminOrReadOnly, IsAuthorOrModeratorOrAdmin
 
 

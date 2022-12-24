@@ -5,7 +5,7 @@ import os
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
-from api.models import Category, Genre, GenreTitle, Title, Review, Comment
+from review.models import Category, Genre, GenreTitle, Title, Review, Comment
 from user.models import User
 
 DATA_DIR = os.path.join(settings.BASE_DIR, 'static', 'data')
