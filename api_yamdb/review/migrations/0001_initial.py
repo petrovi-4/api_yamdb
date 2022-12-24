@@ -9,14 +9,21 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
             name='Category',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
                 ('name', models.CharField(max_length=256)),
                 ('slug', models.SlugField(unique=True)),
             ],
@@ -29,9 +36,22 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Comment',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
                 ('text', models.TextField(verbose_name='Текст')),
-                ('pub_date', models.DateTimeField(auto_now_add=True, verbose_name='Время добавления')),
+                (
+                    'pub_date',
+                    models.DateTimeField(
+                        auto_now_add=True, verbose_name='Время добавления'
+                    ),
+                ),
             ],
             options={
                 'verbose_name': 'Комментарий',
@@ -41,7 +61,15 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Genre',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
                 ('name', models.CharField(max_length=256)),
                 ('slug', models.SlugField(unique=True)),
             ],
@@ -54,16 +82,46 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='GenreTitle',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
             name='Review',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
                 ('text', models.TextField(verbose_name='Текст')),
-                ('score', models.SmallIntegerField(validators=[django.core.validators.MinValueValidator(0), django.core.validators.MaxValueValidator(10)], verbose_name='Оценка')),
-                ('pub_date', models.DateTimeField(auto_now_add=True, verbose_name='Время добавления')),
+                (
+                    'score',
+                    models.SmallIntegerField(
+                        validators=[
+                            django.core.validators.MinValueValidator(0),
+                            django.core.validators.MaxValueValidator(10),
+                        ],
+                        verbose_name='Оценка',
+                    ),
+                ),
+                (
+                    'pub_date',
+                    models.DateTimeField(
+                        auto_now_add=True, verbose_name='Время добавления'
+                    ),
+                ),
             ],
             options={
                 'verbose_name': ('Обзор',),
@@ -73,12 +131,35 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Title',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    'id',
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
                 ('name', models.CharField(max_length=256)),
                 ('year', models.IntegerField()),
                 ('description', models.CharField(blank=True, max_length=1800)),
-                ('category', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='titles', to='review.category')),
-                ('genre', models.ManyToManyField(related_name='titles', through='review.GenreTitle', to='review.Genre')),
+                (
+                    'category',
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name='titles',
+                        to='review.category',
+                    ),
+                ),
+                (
+                    'genre',
+                    models.ManyToManyField(
+                        related_name='titles',
+                        through='review.GenreTitle',
+                        to='review.Genre',
+                    ),
+                ),
             ],
             options={
                 'verbose_name': 'Произведение',

@@ -5,6 +5,7 @@ from django.db import models
 
 user = get_user_model()
 
+
 class Category(models.Model):
     """Модель категории произведений"""
 
@@ -68,15 +69,15 @@ class Review(models.Model):
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
-        related_name='reviews',
-        verbose_name='Произведение'
+        related_name='review',
+        verbose_name='Произведение',
     )
     text = models.TextField(verbose_name='Текст')
     author = models.ForeignKey(
         user,
         on_delete=models.CASCADE,
-        related_name='reviews',
-        verbose_name='Автор'
+        related_name='review',
+        verbose_name='Автор',
     )
     score = models.SmallIntegerField(
         validators=[
@@ -109,13 +110,13 @@ class Comment(models.Model):
         user,
         on_delete=models.CASCADE,
         related_name='comments',
-        verbose_name='Автор'
+        verbose_name='Автор',
     )
     review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
         related_name='comments',
-        verbose_name='Ревью'
+        verbose_name='Ревью',
     )
     pub_date = models.DateTimeField(
         verbose_name='Время добавления', auto_now_add=True
