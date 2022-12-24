@@ -5,7 +5,7 @@ from rest_framework.pagination import (PageNumberPagination)
 from api.models import Category, Genre, Title
 from api.seriaizers import (CategorySerializer,
                             GenreSerializer, TitleSerializer)
-# from user.permissions import IsAdminOrReadOnly
+from user.permissions import IsAdminOrReadOnly
 
 
 class CategoryViewSet(
@@ -17,7 +17,7 @@ class CategoryViewSet(
     """Вьюсет категорий"""
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    # permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (IsAdminOrReadOnly,)
     pagination_class = PageNumberPagination
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
@@ -33,7 +33,7 @@ class GenreViewSet(
     """Вьюсет жанров"""
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    # permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (IsAdminOrReadOnly,)
     pagination_class = PageNumberPagination
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
@@ -44,7 +44,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     """Вьюсет постов"""
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
-    # permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (IsAdminOrReadOnly,)
     pagination_class = PageNumberPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ('name', 'year', 'genre__slug', 'category__slug')
