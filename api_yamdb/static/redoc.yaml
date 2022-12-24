@@ -1140,7 +1140,7 @@ components:
       properties:
         token:
           type: string
-          title: access токен
+          title: user токен
 
     Comment:
       title: Комментарий
