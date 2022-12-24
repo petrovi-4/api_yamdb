@@ -5,7 +5,8 @@ import os
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
-from api.models import Category, Genre, GenreTitle, Title
+from api.models import Category, Genre, GenreTitle, Title, Review, Comment
+from user.models import User
 
 DATA_DIR = os.path.join(settings.BASE_DIR, 'static', 'data')
 
@@ -13,7 +14,10 @@ FILE_MODEL = {
     'category.csv': Category,
     'genre.csv': Genre,
     'titles.csv': Title,
-    'genre_title.csv': GenreTitle
+    'genre_title.csv': GenreTitle,
+    'review.csv': Review,
+    'comments.csv': Comment,
+    'users.csv': User
 }
 
 
