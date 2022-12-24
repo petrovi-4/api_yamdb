@@ -3,17 +3,22 @@ import random
 from django.conf import settings
 from django.contrib.auth.hashers import check_password, make_password
 from django.core.mail import send_mail
+from django.db.utils import IntegrityError
 from django.shortcuts import get_object_or_404
 from rest_framework import status, permissions, viewsets, filters
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.decorators import api_view, permission_classes, action
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import AccessToken
 
 from .models import User
 from .permissions import IsAdmin
-from .serializers import SendCodeSerializer, UserSerializer
+from .serializers import (
+    SendCodeSerializer,
+    UserSerializer,
+    CheckConfirmationCodeSerializer,
+)
 
 
 @api_view(["POST"])
@@ -21,61 +26,37 @@ from .serializers import SendCodeSerializer, UserSerializer
 def get_jwt(request):
     username = request.data.get("username")
     confirmation_code = request.data.get("confirmation_code")
-    if not username or not confirmation_code:
-        return Response(
-            "Одно или несколько обязательных полей пропущены",
-            status=status.HTTP_400_BAD_REQUEST,
-        )
+    serializer = CheckConfirmationCodeSerializer(data=request.data)
 
-    if not User.objects.filter(username=username).exists():
-        return Response("Имя пользователя неверное", status=status.HTTP_404_NOT_FOUND)
+    if serializer.is_valid():
+        user = User.objects.get(username=username)
+        if check_password(confirmation_code, user.confirmation_code):
+            token = AccessToken.for_user(user)
+            user.confirmation_code = 0
+            user.save()
+            return Response({"access": str(token)})
 
-    user = User.objects.get(username=username)
-    if check_password(confirmation_code, user.confirmation_code):
-        token = AccessToken.for_user(user)
-        return Response({"access": str(token)})
-
-    return Response("Код подтверждения неверен", status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
-def send_code(request):
-    username = request.data.get("username", False)
-    email = request.data.get("email", False)
-    if not username or not email:
-        return Response(
-            "Одно или несколько обязательных полей пропущены",
-            status=status.HTTP_400_BAD_REQUEST,
-        )
+def get_jwt(request):
+    username = request.data.get("username")
+    confirmation_code = request.data.get("confirmation_code")
+    serializer = CheckConfirmationCodeSerializer(data=request.data)
 
-    serializer = SendCodeSerializer(data=request.data)
     if serializer.is_valid():
-        confirmation_code = "".join(map(str, random.sample(range(10), 6)))
-        user = User.objects.filter(username=username).exists()
-        if not user:
-            User.objects.create_user(email=email, username=username)
-        User.objects.filter(email=email).update(
-            confirmation_code=make_password(
-                confirmation_code, salt=None, hasher="default"
-            )
-        )
-        mail_subject = "Код подтверждения для доступа к API! "
-        message = f"""
-                Здравствуйте!
-                Код подтверждения для доступа к API: {confirmation_code}
-                С уважением
-                Yamdb
-                """
-        send_mail(
-            mail_subject,
-            message,
-            settings.EMAIL_HOST_USER,
-            [email],
-            fail_silently=False,
-        )
-        text_message = f"Код отправлен на адрес {email}." " Проверьте раздел SPAM"
-        return Response(text_message, status=status.HTTP_200_OK)
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
+        if check_password(confirmation_code, user.confirmation_code):
+            token = AccessToken.for_user(user)
+            user.confirmation_code = 0
+            user.save()
+            return Response({"access": str(token)})
+
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -102,6 +83,34 @@ class UserAdminViewSet(viewsets.ModelViewSet):
     lookup_field = "username"
     filter_backends = [filters.SearchFilter]
     permission_classes = [IsAdmin]
+    http_method_names = ["get", "post", "patch", "delete"]
     search_fields = [
         "user__username",
     ]
+
+    @action(
+        methods=["GET", "PATCH"],
+        detail=False,
+        permission_classes=(IsAuthenticated,),
+        url_path="me",
+    )
+    def get_current_user_info(self, request):
+        serializer = UserSerializer(request.user)
+        if request.method == "PATCH":
+            serializer = UserSerializer(
+                request.user, data=request.data, partial=True
+            )
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data)
+
+    def patch(self, request):
+        if request.user.is_authenticated:
+            user = get_object_or_404(User, id=request.user.id)
+            serializer = UserSerializer(user, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response("Вы не авторизованы", status=status.HTTP_401_UNAUTHORIZED)
