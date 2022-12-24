@@ -1,11 +1,17 @@
 from django.shortcuts import render, get_object_or_404
 from rest_framework import viewsets
 from rest_framework.pagination import LimitOffsetPagination
-from seriaizers import CommentSerializer, ReviewSerializer
+from seriaizers import (
+    CommentSerializer,
+    ReviewSerializer,
+    GenreSerializer,
+    CategorySerializer,
+    TitleSerializer,
+)
 
-from users.permissions import IsAuthorOrModeratorOrAdmin
+from ..user.permissions import IsAuthorOrModeratorOrAdmin, IsAdminOrReadOnly
 
-from .models import Review, Comment
+from .models import Review, Genre, Category, Title
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -37,3 +43,48 @@ class ReviewViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         title_id = self.kwargs.get('title_id')
         serializer.save(author=self.request.user, title_id=title_id)
+
+
+class CategoryViewSet(
+    viewsets.GenericViewSet,
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
+):
+    """Вьюсет категорий"""
+
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    pagination_class = PageNumberPagination
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
+    lookup_field = 'slug'
+
+
+class GenreViewSet(
+    viewsets.GenericViewSet,
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
+):
+    """Вьюсет жанров"""
+
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    pagination_class = PageNumberPagination
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
+    lookup_field = 'slug'
+
+
+class TitleViewSet(viewsets.ModelViewSet):
+    """Вьюсет постов"""
+
+    queryset = Title.objects.all()
+    serializer_class = TitleSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    pagination_class = PageNumberPagination
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ('name', 'year', 'genre__slug', 'category__slug')
