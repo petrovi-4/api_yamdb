@@ -3,7 +3,6 @@ import random
 from django.conf import settings
 from django.contrib.auth.hashers import check_password, make_password
 from django.core.mail import send_mail
-from django.db.utils import IntegrityError
 from django.shortcuts import get_object_or_404
 from rest_framework import status, permissions, viewsets, filters
 from rest_framework.decorators import api_view, permission_classes, action
@@ -15,27 +14,38 @@ from rest_framework_simplejwt.tokens import AccessToken
 from .models import User
 from .permissions import IsAdmin
 from .serializers import (
-    SendCodeSerializer,
     UserSerializer,
-    CheckConfirmationCodeSerializer,
+    CheckConfirmationCodeSerializer, SendCodeSerializer,
 )
 
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
-def get_jwt(request):
-    username = request.data.get("username")
-    confirmation_code = request.data.get("confirmation_code")
-    serializer = CheckConfirmationCodeSerializer(data=request.data)
-
+def send_code(request):
+    serializer = SendCodeSerializer(data=request.data)
     if serializer.is_valid():
-        user = User.objects.get(username=username)
-        if check_password(confirmation_code, user.confirmation_code):
-            token = AccessToken.for_user(user)
-            user.confirmation_code = 0
-            user.save()
-            return Response({"access": str(token)})
+        email = request.data.get("email", False)
+        username = request.data.get("username", False)
+        confirmation_code = "".join(map(str, random.sample(range(10), 6)))
+        if not User.objects.filter(username=username, email=email).exists():
+            user = User.objects.create(username=username, email=email)
+        else:
+            user = User.objects.get(username=username, email=email)
+        user.confirmation_code = make_password(
+            confirmation_code, salt=None, hasher="default"
+        )
+        user.save()
 
+        send_mail(
+            "Code",
+            confirmation_code,
+            settings.EMAIL_HOST_USER,
+            [email],
+            fail_silently=False,
+        )
+        return Response(
+            serializer.initial_data, status=status.HTTP_200_OK
+        )
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -97,9 +107,7 @@ class UserAdminViewSet(viewsets.ModelViewSet):
     def get_current_user_info(self, request):
         serializer = UserSerializer(request.user)
         if request.method == "PATCH":
-            serializer = UserSerializer(
-                request.user, data=request.data, partial=True
-            )
+            serializer = UserSerializer(request.user, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
