@@ -67,7 +67,7 @@ def get_jwt(request):
             token = AccessToken.for_user(user)
             user.confirmation_code = 0
             user.save()
-            return Response({"access": str(token)})
+            return Response({"user": str(token)})
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
