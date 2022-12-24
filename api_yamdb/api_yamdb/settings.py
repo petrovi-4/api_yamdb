@@ -1,7 +1,10 @@
+import os
+from datetime import timedelta
 from pathlib import Path
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+SETTINGS_PATH = os.path.dirname(os.path.dirname(__file__))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "p&l%385148kslhtyn^##a1)ilz@4zqj=rq&agdol^##zgl9(vs"
@@ -17,13 +20,18 @@ AUTH_USER_MODEL = "user.User"
 # Application definition
 
 INSTALLED_APPS = [
-    "user",
-    "django.contrib.admin",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
+    'user',
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'django_filters',
+    'api',
+    'user',
 ]
 
 MIDDLEWARE = [
@@ -41,15 +49,15 @@ ROOT_URLCONF = "api_yamdb.urls"
 TEMPLATES_DIR = BASE_DIR / "templates"
 TEMPLATES = [
     {
-        "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
-        "APP_DIRS": True,
-        "OPTIONS": {
-            "context_processors": [
-                "django.template.context_processors.debug",
-                "django.template.context_processors.request",
-                "django.contrib.auth.context_processors.auth",
-                "django.contrib.messages.context_processors.messages",
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(SETTINGS_PATH, 'templates')],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
             ],
         },
     },
@@ -59,6 +67,7 @@ WSGI_APPLICATION = "api_yamdb.wsgi.application"
 
 
 # Database
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 DATABASES = {
     "default": {
@@ -103,7 +112,24 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 
-STATICFILES_DIRS = ((BASE_DIR / "static/"),)
 
+STATICFILES_DIRS = ((BASE_DIR / 'static/'),)
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        "rest_framework.permissions.AllowAny",
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=3),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+

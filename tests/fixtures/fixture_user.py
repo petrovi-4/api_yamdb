@@ -51,7 +51,7 @@ def user(django_user_model):
 def token_user_superuser(user_superuser):
     token = AccessToken.for_user(user_superuser)
     return {
-        'access': str(token),
+        'user': str(token),
     }
 
 
@@ -59,7 +59,7 @@ def token_user_superuser(user_superuser):
 def user_superuser_client(token_user_superuser):
     client = APIClient()
     client.credentials(
-        HTTP_AUTHORIZATION=f'Bearer {token_user_superuser["access"]}'
+        HTTP_AUTHORIZATION=f'Bearer {token_user_superuser["user"]}'
     )
     return client
 
@@ -68,14 +68,14 @@ def user_superuser_client(token_user_superuser):
 def token_admin(admin):
     token = AccessToken.for_user(admin)
     return {
-        'access': str(token),
+        'user': str(token),
     }
 
 
 @pytest.fixture
 def admin_client(token_admin):
     client = APIClient()
-    client.credentials(HTTP_AUTHORIZATION=f'Bearer {token_admin["access"]}')
+    client.credentials(HTTP_AUTHORIZATION=f'Bearer {token_admin["user"]}')
     return client
 
 
@@ -83,7 +83,7 @@ def admin_client(token_admin):
 def token_moderator(moderator):
     token = AccessToken.for_user(moderator)
     return {
-        'access': str(token),
+        'user': str(token),
     }
 
 
@@ -91,7 +91,7 @@ def token_moderator(moderator):
 def moderator_client(token_moderator):
     client = APIClient()
     client.credentials(
-        HTTP_AUTHORIZATION=f'Bearer {token_moderator["access"]}'
+        HTTP_AUTHORIZATION=f'Bearer {token_moderator["user"]}'
     )
     return client
 
@@ -100,12 +100,12 @@ def moderator_client(token_moderator):
 def token_user(user):
     token = AccessToken.for_user(user)
     return {
-        'access': str(token),
+        'user': str(token),
     }
 
 
 @pytest.fixture
 def user_client(token_user):
     client = APIClient()
-    client.credentials(HTTP_AUTHORIZATION=f'Bearer {token_user["access"]}')
+    client.credentials(HTTP_AUTHORIZATION=f'Bearer {token_user["user"]}')
     return client
