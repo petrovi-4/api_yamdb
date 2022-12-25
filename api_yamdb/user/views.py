@@ -17,7 +17,8 @@ from .permissions import IsAdmin
 from .serializers import (
     UserSerializer,
     CheckConfirmationCodeSerializer,
-    SendCodeSerializer, IsNotAdminUserSerializer,
+    SendCodeSerializer,
+    IsNotAdminUserSerializer,
 )
 
 
@@ -67,7 +68,7 @@ def get_jwt(request):
             token = AccessToken.for_user(user)
             user.confirmation_code = 0
             user.save()
-            return Response({"user": str(token)})
+            return Response({"token": str(token)})
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -76,8 +77,8 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (
-        IsAuthenticated,
         IsAdmin,
+        IsAuthenticated,
     )
     lookup_field = "username"
     filter_backends = (SearchFilter,)
@@ -94,52 +95,13 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = UserSerializer(request.user)
         if request.method == "PATCH":
             if request.user.is_admin:
-                serializer = IsNotAdminUserSerializer(
-                    request.user, data=request.data, partial=True
-                )
-            else:
                 serializer = UserSerializer(
                     request.user, data=request.data, partial=True
                 )
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.data)
-
-    def patch(self, request):
-        if request.user.is_authenticated:
-            user = get_object_or_404(User, id=request.user.id)
-            serializer = UserSerializer(user, data=request.data, partial=True)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response("Вы не авторизованы", status=status.HTTP_401_UNAUTHORIZED)
-
-
-class UserAdminViewSet(viewsets.ModelViewSet):
-    """ViewSet для администраторов"""
-
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    lookup_field = "username"
-    filter_backends = [filters.SearchFilter]
-    permission_classes = [IsAdmin]
-    http_method_names = ["get", "post", "patch", "delete"]
-    search_fields = [
-        "user__username",
-    ]
-
-    @action(
-        methods=["GET", "PATCH"],
-        detail=False,
-        permission_classes=(IsAuthenticated,),
-        url_path="me",
-    )
-    def get_current_user_info(self, request):
-        serializer = UserSerializer(request.user)
-        if request.method == "PATCH":
-            serializer = UserSerializer(request.user, data=request.data, partial=True)
+            else:
+                serializer = IsNotAdminUserSerializer(
+                    request.user, data=request.data, partial=True
+                )
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)

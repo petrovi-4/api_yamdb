@@ -24,10 +24,10 @@ class User(AbstractUser):
         verbose_name="Адрес электронной почты",
     )
     first_name = models.CharField(
-        max_length=100, blank=True, verbose_name="Имя пользователя"
+        max_length=150, blank=True, verbose_name="Имя пользователя"
     )
     last_name = models.CharField(
-        max_length=100, blank=True, verbose_name="Фамилия пользователя"
+        max_length=150, blank=True, verbose_name="Фамилия пользователя"
     )
     bio = models.CharField(max_length=100, verbose_name="Биография")
     role = models.CharField(
