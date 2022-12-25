@@ -1,7 +1,7 @@
 import re
 
 from django.core.exceptions import ValidationError
-from rest_framework import serializers, status
+from rest_framework import serializers
 
 from .models import User
 
@@ -22,33 +22,32 @@ class SendCodeSerializer(serializers.Serializer):
             errors["username"] = "Это поле обязательно"
         if not data.get("email", False):
             errors["email"] = "Это поле обязательно"
+
         if errors:
             raise serializers.ValidationError(errors)
 
-        username = data.get("username", False)
-        if username.lower() == "me":
+        user = data.get("username", False)
+
+        if user.lower() == "me":
             raise serializers.ValidationError("Username 'me' is not valid")
 
-        if re.search(r"^[\w.@+-]+$", username) is None:
+        if re.search(r"^[\w.@+-]+$", user) is None:
             raise ValidationError(
-                (f"Не допустимые символы <{username}> в нике."),
-                params={"value": username},
+                (f"Не допустимые символы <{user}> в нике."),
+                params={"value": user},
             )
-
         if User.objects.filter(email=data["email"]):
             user = User.objects.get(email=data["email"])
-            if user.username != user:
+            if user.username != data["username"]:
                 raise serializers.ValidationError(
                     {"email": "Данный username уже зарегистрирован"}
                 )
-
-        elif User.objects.filter(username=username):
-            user = User.objects.get(username=username)
+        elif User.objects.filter(username=data["username"]):
+            user = User.objects.get(username=data["username"])
             if user.email != data["email"]:
                 raise serializers.ValidationError(
                     {"email": "Данный email уже зарегистрирован"}
                 )
-
         return data
 
 
