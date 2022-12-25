@@ -72,15 +72,11 @@ class CheckConfirmationCodeSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = (
-            'username', 'email', 'first_name',
-            'last_name', 'bio', 'role')
+        fields = ("username", "email", "first_name", "last_name", "bio", "role")
 
 
 class IsNotAdminUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = (
-            'username', 'email', 'first_name',
-            'last_name', 'bio', 'role')
-        read_only_fields = ('role',)
+        fields = ("username", "email", "first_name", "last_name", "bio", "role")
+        read_only_fields = ("role",)
