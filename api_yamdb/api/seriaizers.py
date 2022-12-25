@@ -49,7 +49,7 @@ class TitleSerializer(serializers.ModelSerializer):
             'rating',
             'description',
             'genre',
-            'category',
+            'category'
         )
         optional_fields = ('description',)
         read_only_fields = ('rating',)
@@ -57,8 +57,9 @@ class TitleSerializer(serializers.ModelSerializer):
     def get_rating(self, obj):
         reviews = Review.objects.filter(title=obj)
         if reviews.exists():
-            return reviews.aggregate(Avg('score'))
-        return 0
+            query = reviews.aggregate(average_score=Avg('score'))
+            return round(query['average_score'])
+        return None
 
     def validate(self, data):
         request = self.context.get('request')
