@@ -22,31 +22,33 @@ class SendCodeSerializer(serializers.Serializer):
             errors["username"] = "Это поле обязательно"
         if not data.get("email", False):
             errors["email"] = "Это поле обязательно"
-        user = data.get("username", False)
-        if user.lower() == "me":
-            raise serializers.ValidationError("Username 'me' is not valid")
-
-        if re.search(r"^[\w.@+-]+$", user) is None:
-            raise ValidationError(
-                (f"Не допустимые символы <{user}> в нике."),
-                params={"value": user},
-            )
-
         if errors:
             raise serializers.ValidationError(errors)
 
+        username = data.get("username", False)
+        if username.lower() == "me":
+            raise serializers.ValidationError("Username 'me' is not valid")
+
+        if re.search(r"^[\w.@+-]+$", username) is None:
+            raise ValidationError(
+                (f"Не допустимые символы <{username}> в нике."),
+                params={"value": username},
+            )
+
         if User.objects.filter(email=data["email"]):
             user = User.objects.get(email=data["email"])
-            if user.username != data["username"]:
+            if user.username != user:
                 raise serializers.ValidationError(
                     {"email": "Данный username уже зарегистрирован"}
                 )
-        elif User.objects.filter(username=data["username"]):
-            user = User.objects.get(username=data["username"])
+
+        elif User.objects.filter(username=username):
+            user = User.objects.get(username=username)
             if user.email != data["email"]:
                 raise serializers.ValidationError(
                     {"email": "Данный email уже зарегистрирован"}
                 )
+
         return data
 
 
