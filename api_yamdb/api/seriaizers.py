@@ -47,7 +47,7 @@ class TitleSerializer(serializers.ModelSerializer):
             if reviews.exists():
                 query = reviews.aggregate(average_score=Avg('score'))
                 return round(query['average_score'])
-            return 0
+            return None
 
     def validate(self, data):
         request = self.context.get("request")
