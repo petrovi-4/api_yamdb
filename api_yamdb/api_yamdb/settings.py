@@ -29,9 +29,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
-    'review',
-    'user',
     'api',
+    'user',
+    'reviews',
 ]
 
 MIDDLEWARE = [
@@ -131,5 +131,4 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-EMAIL_BACKEND = 'django.review.mail.backends.console.EmailBackend'
-
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

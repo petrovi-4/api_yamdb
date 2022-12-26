@@ -6,6 +6,7 @@ from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from rest_framework import status, permissions, viewsets, filters
 from rest_framework.decorators import api_view, permission_classes, action
+from rest_framework.filters import SearchFilter
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -15,13 +16,16 @@ from .models import User
 from .permissions import IsAdmin
 from .serializers import (
     UserSerializer,
-    CheckConfirmationCodeSerializer, SendCodeSerializer,
+    CheckConfirmationCodeSerializer,
+    SendCodeSerializer,
+    IsNotAdminUserSerializer,
 )
 
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def send_code(request):
+    """Отправка кода для авторизации"""
     serializer = SendCodeSerializer(data=request.data)
     if serializer.is_valid():
         email = request.data.get("email", False)
@@ -43,15 +47,14 @@ def send_code(request):
             [email],
             fail_silently=False,
         )
-        return Response(
-            serializer.initial_data, status=status.HTTP_200_OK
-        )
+        return Response(serializer.initial_data, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def get_jwt(request):
+    """Получение JWT токена"""
     username = request.data.get("username")
     confirmation_code = request.data.get("confirmation_code")
     serializer = CheckConfirmationCodeSerializer(data=request.data)
@@ -65,38 +68,22 @@ def get_jwt(request):
             token = AccessToken.for_user(user)
             user.confirmation_code = 0
             user.save()
-            return Response({"user": str(token)})
+            return Response({"token": str(token)})
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UsersViewSet(APIView):
-    @permission_classes([permissions.IsAuthenticated])
-    def get(self, request):
-        user = get_object_or_404(User, id=request.user.id)
-        serializer = UserSerializer(user)
-        return Response(serializer.data)
-
-    @permission_classes([permissions.IsAuthenticated])
-    def patch(self, request):
-        user = get_object_or_404(User, id=request.user.id)
-        serializer = UserSerializer(user, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class UserAdminViewSet(viewsets.ModelViewSet):
+class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = (
+        IsAdmin,
+        IsAuthenticated,
+    )
     lookup_field = "username"
-    filter_backends = [filters.SearchFilter]
-    permission_classes = [IsAdmin]
+    filter_backends = (SearchFilter,)
+    search_fields = ("username",)
     http_method_names = ["get", "post", "patch", "delete"]
-    search_fields = [
-        "user__username",
-    ]
 
     @action(
         methods=["GET", "PATCH"],
@@ -107,7 +94,14 @@ class UserAdminViewSet(viewsets.ModelViewSet):
     def get_current_user_info(self, request):
         serializer = UserSerializer(request.user)
         if request.method == "PATCH":
-            serializer = UserSerializer(request.user, data=request.data, partial=True)
+            if request.user.is_admin:
+                serializer = UserSerializer(
+                    request.user, data=request.data, partial=True
+                )
+            else:
+                serializer = IsNotAdminUserSerializer(
+                    request.user, data=request.data, partial=True
+                )
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
