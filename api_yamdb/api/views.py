@@ -3,18 +3,18 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, mixins, viewsets
 from rest_framework.pagination import (
     LimitOffsetPagination,
-    PageNumberPagination,
+    PageNumberPagination
 )
 
+from reviews.models import Category, Genre, Review, Title
+from user.permissions import IsAdminOrReadOnly, IsAuthorOrModeratorOrAdmin
 from .seriaizers import (
     CategorySerializer,
     CommentSerializer,
     GenreSerializer,
     ReviewSerializer,
-    TitleSerializer,
+    TitleSerializer
 )
-from reviews.models import Category, Genre, Review, Title
-from user.permissions import IsAdminOrReadOnly, IsAuthorOrModeratorOrAdmin
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -52,7 +52,7 @@ class CategoryViewSet(
     viewsets.GenericViewSet,
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
-    mixins.DestroyModelMixin,
+    mixins.DestroyModelMixin
 ):
     """Вьюсет категорий"""
 
@@ -69,7 +69,7 @@ class GenreViewSet(
     viewsets.GenericViewSet,
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
-    mixins.DestroyModelMixin,
+    mixins.DestroyModelMixin
 ):
     """Вьюсет жанров"""
 

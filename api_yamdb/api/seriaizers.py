@@ -1,10 +1,11 @@
 from datetime import datetime
+
 from django.contrib.auth import get_user_model
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
-from reviews.models import Category, Genre, Title, Comment, Review
+from reviews.models import Category, Comment, Genre, Review, Title
 
 User = get_user_model()
 
@@ -33,10 +34,6 @@ class TitleSerializer(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField()
     genre = GenreSerializer(many=True, read_only=True)
     category = CategorySerializer(read_only=True)
-
-    def get_rating(self, obj):
-        rating = obj.reviews.aggregate(Avg('score')).get('score__avg')
-        return rating if not rating else round(rating, 0)
 
     class Meta:
         model = Title
@@ -68,10 +65,10 @@ class TitleSerializer(serializers.ModelSerializer):
                 "Год не может быть больше нынешнего."
             )
         if (
-            request.method == "POST"
-            and Title.objects.filter(
-                name=data["name"], year=data["year"]
-            ).exists()
+                request.method == "POST"
+                and Title.objects.filter(
+            name=data["name"], year=data["year"]
+        ).exists()
         ):
             raise serializers.ValidationError("Такой фильм уже есть в базе.")
         return data
@@ -105,8 +102,8 @@ class ReviewSerializer(serializers.ModelSerializer):
         title_id = self.context["view"].kwargs.get("title_id")
         title = get_object_or_404(Title, pk=title_id)
         if (
-            request.method == "POST"
-            and Review.objects.filter(title=title, author=author).exists()
+                request.method == "POST"
+                and Review.objects.filter(title=title, author=author).exists()
         ):
             raise serializers.ValidationError(
                 "Вы уже оставили свой отзыв к этому призведению!"
