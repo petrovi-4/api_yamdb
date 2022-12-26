@@ -1,36 +1,75 @@
 from rest_framework import permissions
-from rest_framework.permissions import BasePermission
+from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 
 class IsAdminOrReadOnly(BasePermission):
-    def has_object_permission(self, request, view, obj):
+    def has_permission(self, request, view):
         return (
-            request.user.is_admin
-            or request.user.is_staff
-            or request.method in permissions.SAFE_METHODS
+            request.method in SAFE_METHODS
+            or request.user.is_superuser
+            or request.user.is_authenticated
+            and request.user.is_admin
         )
 
 
 class IsAdmin(permissions.BasePermission):
     def has_permission(self, request, view):
-        if request.user.is_authenticated:
-            return request.user.is_admin or request.user.is_staff
-        return False
-
-    def has_object_permission(self, request, view, obj):
-        if request.user.is_authenticated:
-            return request.user.is_admin or request.user.is_staff
-        return False
+        return request.user.is_authenticated and (
+            request.user.is_admin or request.user.is_superuser
+        )
 
 
 class IsAuthorOrModeratorOrAdmin(BasePermission):
+    def has_permission(self, request, view):
+        return request.method in SAFE_METHODS or request.user.is_authenticated
+
     def has_object_permission(self, request, view, obj):
-        user = request.user
-        if user.is_authenticated:
-            return (
-                user.is_admin
-                or user.is_staff
-                or user.is_moderator
-                or user == obj.author
-            )
-        return False
+        return (
+            request.method in SAFE_METHODS
+            or obj.author == request.user
+            or request.user.is_admin
+            or request.user.is_superuser
+            or request.user.is_moderator
+        )
+
+
+# class ListOrAdminModeratOnly(BasePermission):
+#     """Разрешает получения списка всем и редактирование
+#     только  администратору/суперпользователю"""
+#
+#     def has_permission(self, request, view):
+#         return (
+#             request.method in SAFE_METHODS
+#             or request.user.is_superuser
+#             or request.user.is_authenticated
+#             and request.user.is_admin
+#         )
+#
+#
+# class AdminAndSuperuserOnly(BasePermission):
+#     """Разрешение контролирующее разрешение
+#     только для пользователей с ролью администратор
+#     и ролью суперпользователя"""
+#
+#     def has_permission(self, request, view):
+#         return request.user.is_authenticated and (
+#             request.user.is_admin or request.user.is_superuser
+#         )
+#
+#
+# class AuthenticatedPrivilegedUsersOrReadOnly(BasePermission):
+#     """Разрешение доступа на чтение всем и
+#     на редактирование только автору и
+#     администратору/модератору/суперпользователю"""
+#
+#     def has_permission(self, request, view):
+#         return request.method in SAFE_METHODS or request.user.is_authenticated
+#
+#     def has_object_permission(self, request, view, obj):
+#         return (
+#             request.method in SAFE_METHODS
+#             or obj.author == request.user
+#             or request.user.is_admin
+#             or request.user.is_superuser
+#             or request.user.is_moderator
+#         )
