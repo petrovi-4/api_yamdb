@@ -47,7 +47,7 @@ class TitleSerializer(serializers.ModelSerializer):
             "rating",
             "description",
             "genre",
-            "category",
+            "category"
         )
         optional_fields = ("description",)
         read_only_fields = ("rating",)
