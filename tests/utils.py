@@ -151,10 +151,10 @@ def check_permissions(client, url, data, user_role, objects, expected_status):
 
 def create_single_review(client, title_id, text, score):
     data = {'text': text, 'score': score}
-    response = client.post(f'/api/v1/titles/{title_id}/review/', data=data)
+    response = client.post(f'/api/v1/titles/{title_id}/reviews/', data=data)
     assert response.status_code == HTTPStatus.CREATED, (
         'Если POST-запрос авторизованного пользователя к '
-        '`/api/v1/titles/{title_id}/review/` содержит корректные данные - '
+        '`/api/v1/titles/{title_id}/reviews/` содержит корректные данные - '
         'должен вернуться ответ со статусом 201.'
     )
     return response
@@ -163,11 +163,11 @@ def create_single_review(client, title_id, text, score):
 def create_single_comment(client, title_id, review_id, text):
     data = {'text': text}
     response = client.post(
-        f'/api/v1/titles/{title_id}/review/{review_id}/comments/', data=data
+        f'/api/v1/titles/{title_id}/reviews/{review_id}/comments/', data=data
     )
     assert response.status_code == HTTPStatus.CREATED, (
         'Если POST-запрос авторизованного пользователя к '
-        '`/api/v1/titles/{title_id}/review/{review_id}/comments/` содержит '
+        '`/api/v1/titles/{title_id}/reviews/{review_id}/comments/` содержит '
         'корректные данные - должен вернуться ответ со статусом 201.'
     )
     return response
@@ -237,7 +237,7 @@ def create_titles(admin_client):
 def create_reviews(admin_client, authors_map):
     titles, _, _ = create_titles(admin_client)
     result = []
-    text = 'review number {}'
+    text = 'reviews number {}'
     for idx, (user, user_client) in enumerate(authors_map.items(), 1):
         response = create_single_review(
             user_client, titles[0]['id'], text.format(idx), 5
@@ -274,7 +274,7 @@ def create_comments(admin_client, authors_map):
 def check_fields(obj_type, url_pattern, obj, expected_data, detail=False):
     obj_types = {
         'comment': 'комментария(ев) к отзыву',
-        'review': 'отзыва(ов)',
+        'reviews': 'отзыва(ов)',
     }
     results_in_msg = ' в ключе `results`'
     if detail:
