@@ -1,7 +1,7 @@
 import re
 
 from django.core.exceptions import ValidationError
-from rest_framework import serializers, status
+from rest_framework import serializers
 
 from .models import User
 
@@ -22,7 +22,12 @@ class SendCodeSerializer(serializers.Serializer):
             errors["username"] = "Это поле обязательно"
         if not data.get("email", False):
             errors["email"] = "Это поле обязательно"
+
+        if errors:
+            raise serializers.ValidationError(errors)
+
         user = data.get("username", False)
+
         if user.lower() == "me":
             raise serializers.ValidationError("Username 'me' is not valid")
 
@@ -31,10 +36,6 @@ class SendCodeSerializer(serializers.Serializer):
                 (f"Не допустимые символы <{user}> в нике."),
                 params={"value": user},
             )
-
-        if errors:
-            raise serializers.ValidationError(errors)
-
         if User.objects.filter(email=data["email"]):
             user = User.objects.get(email=data["email"])
             if user.username != data["username"]:
@@ -72,15 +73,11 @@ class CheckConfirmationCodeSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = (
-            'username', 'email', 'first_name',
-            'last_name', 'bio', 'role')
+        fields = ("username", "email", "first_name", "last_name", "bio", "role")
 
 
 class IsNotAdminUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = (
-            'username', 'email', 'first_name',
-            'last_name', 'bio', 'role')
-        read_only_fields = ('role',)
+        fields = ("username", "email", "first_name", "last_name", "bio", "role")
+        read_only_fields = ("role",)

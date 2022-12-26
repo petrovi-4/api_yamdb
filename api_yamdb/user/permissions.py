@@ -11,15 +11,26 @@ class IsAdminOrReadOnly(BasePermission):
         )
 
 
-class IsAdmin(BasePermission):
+class IsAdmin(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.user.is_authenticated:
+            return request.user.is_admin or request.user.is_staff
+        return False
+
     def has_object_permission(self, request, view, obj):
-        print(request.user.is_admin)
-        return request.user.is_admin or request.user.is_staff
+        if request.user.is_authenticated:
+            return request.user.is_admin or request.user.is_staff
+        return False
 
 
 class IsAuthorOrModeratorOrAdmin(BasePermission):
     def has_object_permission(self, request, view, obj):
         user = request.user
         if user.is_authenticated:
-            return user.is_admin or user.is_staff or user.is_moderator or user == obj.author
+            return (
+                user.is_admin
+                or user.is_staff
+                or user.is_moderator
+                or user == obj.author
+            )
         return False
