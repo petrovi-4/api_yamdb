@@ -149,15 +149,15 @@ class Migration(migrations.Migration):
                         null=True,
                         on_delete=django.db.models.deletion.SET_NULL,
                         related_name='titles',
-                        to='review.category',
+                        to='reviews.category',
                     ),
                 ),
                 (
                     'genre',
                     models.ManyToManyField(
                         related_name='titles',
-                        through='review.GenreTitle',
-                        to='review.Genre',
+                        through='reviews.GenreTitle',
+                        to='reviews.Genre',
                     ),
                 ),
             ],

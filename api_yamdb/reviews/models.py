@@ -1,7 +1,10 @@
 """Модели приложения YaMDb"""
+from django.contrib.auth.models import AbstractUser
 from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.conf import settings
 from django.db import models
+from .validators import max_value_current_year
 
 user = get_user_model()
 
@@ -9,8 +12,10 @@ user = get_user_model()
 class Category(models.Model):
     """Модель категории произведений"""
 
-    name = models.CharField(max_length=256)
-    slug = models.SlugField(max_length=50, unique=True)
+    name = models.CharField(max_length=256, verbose_name='Название категории')
+    slug = models.SlugField(
+        unique=True, max_length=50, verbose_name='Слаг категории'
+    )
 
     class Meta:
         ordering = ['id']
@@ -24,8 +29,8 @@ class Category(models.Model):
 class Genre(models.Model):
     """Модель жанра произведений"""
 
-    name = models.CharField(max_length=256)
-    slug = models.SlugField(max_length=50, unique=True)
+    name = models.CharField(max_length=256, verbose_name='Название категории')
+    slug = models.SlugField(unique=True, verbose_name='Слаг жанра')
 
     class Meta:
         ordering = ['id']
@@ -39,15 +44,33 @@ class Genre(models.Model):
 class Title(models.Model):
     """Модель произведения"""
 
-    name = models.CharField(max_length=256)
-    year = models.IntegerField()
-    description = models.CharField(max_length=1800, blank=True)
+    name = models.CharField(
+        max_length=256, verbose_name='Название произведения'
+    )
+    year = models.PositiveSmallIntegerField(
+        verbose_name='Год создания',
+        validators=[MinValueValidator(0), max_value_current_year],
+    )
+    description = models.TextField(
+        verbose_name='Описание произведения',
+        blank=True,
+    )
     genre = models.ManyToManyField(
-        Genre, through='GenreTitle', related_name='titles'
+        Genre,
+        through='GenreTitle',
+        related_name='genre',
+        verbose_name='Жанр',
     )
     category = models.ForeignKey(
-        Category, on_delete=models.SET_NULL, related_name='titles', null=True
+        Category,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='category',
+        verbose_name='Категория',
     )
+
+    def __str__(self) -> str:
+        return self.name
 
     class Meta:
         ordering = ['id']
@@ -64,20 +87,24 @@ class GenreTitle(models.Model):
     genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
     title = models.ForeignKey(Title, on_delete=models.CASCADE)
 
+    def __str__(self) -> str:
+        return self.genre
+
 
 class Review(models.Model):
     title = models.ForeignKey(
-        Title,
+        to=Title,
         on_delete=models.CASCADE,
-        related_name='review',
+        related_name='reviews',
         verbose_name='Произведение',
     )
     text = models.TextField(verbose_name='Текст')
     author = models.ForeignKey(
-        user,
+        to=settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name='review',
+        related_name='reviews',
         verbose_name='Автор',
+        default=None,
     )
     score = models.SmallIntegerField(
         validators=[
@@ -94,7 +121,7 @@ class Review(models.Model):
         return f'Оценка {self.author.username} на {self.title.name}'
 
     class Meta:
-        verbose_name = ('Обзор',)
+        verbose_name = 'Обзор'
         verbose_name_plural = 'Обзоры'
 
         constraints = [
@@ -107,13 +134,14 @@ class Review(models.Model):
 class Comment(models.Model):
     text = models.TextField(verbose_name='Текст')
     author = models.ForeignKey(
-        user,
+        to=settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name='comments',
         verbose_name='Автор',
+        default=None,
     )
     review = models.ForeignKey(
-        Review,
+        to=Review,
         on_delete=models.CASCADE,
         related_name='comments',
         verbose_name='Ревью',
