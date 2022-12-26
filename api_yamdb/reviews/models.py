@@ -104,7 +104,6 @@ class Review(models.Model):
         on_delete=models.CASCADE,
         related_name='reviews',
         verbose_name='Автор',
-        default=None,
     )
     score = models.SmallIntegerField(
         validators=[
@@ -138,7 +137,6 @@ class Comment(models.Model):
         on_delete=models.CASCADE,
         related_name='comments',
         verbose_name='Автор',
-        default=None,
     )
     review = models.ForeignKey(
         to=Review,
