@@ -1,21 +1,16 @@
 from django.shortcuts import get_object_or_404
-from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, mixins, viewsets
 from rest_framework.pagination import (
     LimitOffsetPagination,
     PageNumberPagination,
 )
-from .filters import TitleFilter
+
 from reviews.models import Category, Genre, Review, Title
 from user.permissions import IsAdminOrReadOnly, IsAuthorOrModeratorOrAdmin
-from .seriaizers import (
-    CategorySerializer,
-    CommentSerializer,
-    GenreSerializer,
-    ReviewSerializer,
-    TitleSerializer,
-    TitleCreateSerializer,
-)
+from .filters import TitleFilter
+from .seriaizers import (CategorySerializer, CommentSerializer, GenreSerializer,
+                         ReviewSerializer, TitleCreateSerializer,
+                         TitleSerializer)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -90,12 +85,12 @@ class TitleViewSet(viewsets.ModelViewSet):
     serializer_class = TitleSerializer
     permission_classes = (IsAdminOrReadOnly,)
     pagination_class = PageNumberPagination
-    filter_class = filterset_class = TitleFilter
+    filterset_class = TitleFilter
 
     def get_serializer_class(self):
         if self.request.method in (
-            'POST',
-            'PATCH',
+                'POST',
+                'PATCH',
         ):
             return TitleCreateSerializer
         return TitleSerializer
