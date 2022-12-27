@@ -29,7 +29,7 @@ class SendCodeSerializer(serializers.Serializer):
         user = data.get('username', False)
 
         if user.lower() == 'me':
-            raise serializers.ValidationError('Username 'me' is not valid')
+            raise serializers.ValidationError('Username "me" is not valid')
 
         if re.search(r'^[\w.@+-]+$', user) is None:
             raise ValidationError(
@@ -74,12 +74,12 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            'username', 
-            'email', 
-            'first_name', 
-            'last_name', 
-            'bio', 
-            'role'
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'bio',
+            'role',
         )
 
 
@@ -87,11 +87,11 @@ class IsNotAdminUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            'username', 
-            'email', 
-            'first_name', 
-            'last_name', 
-            'bio', 
-            'role'
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'bio',
+            'role',
         )
         read_only_fields = ('role',)
