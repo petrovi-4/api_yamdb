@@ -18,35 +18,35 @@ class SendCodeSerializer(serializers.Serializer):
     def validate(self, data):
         errors = {}
 
-        if not data.get("username", False):
-            errors["username"] = "Это поле обязательно"
-        if not data.get("email", False):
-            errors["email"] = "Это поле обязательно"
+        if not data.get('username', False):
+            errors['username'] = 'Это поле обязательно'
+        if not data.get('email', False):
+            errors['email'] = 'Это поле обязательно'
 
         if errors:
             raise serializers.ValidationError(errors)
 
-        user = data.get("username", False)
+        user = data.get('username', False)
 
-        if user.lower() == "me":
-            raise serializers.ValidationError("Username 'me' is not valid")
+        if user.lower() == 'me':
+            raise serializers.ValidationError('Username 'me' is not valid')
 
-        if re.search(r"^[\w.@+-]+$", user) is None:
+        if re.search(r'^[\w.@+-]+$', user) is None:
             raise ValidationError(
-                (f"Не допустимые символы <{user}> в нике."),
-                params={"value": user},
+                (f'Не допустимые символы <{user}> в нике.'),
+                params={'value': user},
             )
-        if User.objects.filter(email=data["email"]):
-            user = User.objects.get(email=data["email"])
-            if user.username != data["username"]:
+        if User.objects.filter(email=data['email']):
+            user = User.objects.get(email=data['email'])
+            if user.username != data['username']:
                 raise serializers.ValidationError(
-                    {"email": "Данный username уже зарегистрирован"}
+                    {'email': 'Данный username уже зарегистрирован'}
                 )
-        elif User.objects.filter(username=data["username"]):
-            user = User.objects.get(username=data["username"])
-            if user.email != data["email"]:
+        elif User.objects.filter(username=data['username']):
+            user = User.objects.get(username=data['username'])
+            if user.email != data['email']:
                 raise serializers.ValidationError(
-                    {"email": "Данный email уже зарегистрирован"}
+                    {'email': 'Данный email уже зарегистрирован'}
                 )
         return data
 
@@ -60,10 +60,10 @@ class CheckConfirmationCodeSerializer(serializers.Serializer):
 
     def validate(self, data):
         errors = {}
-        if not data.get("username", False):
-            errors["username"] = "Это поле обязательно"
-        if not data.get("confirmation_code", False):
-            errors["confirmation_code"] = "Это поле обязательно"
+        if not data.get('username', False):
+            errors['username'] = 'Это поле обязательно'
+        if not data.get('confirmation_code', False):
+            errors['confirmation_code'] = 'Это поле обязательно'
 
         if errors:
             raise serializers.ValidationError(errors)
@@ -73,11 +73,25 @@ class CheckConfirmationCodeSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("username", "email", "first_name", "last_name", "bio", "role")
+        fields = (
+            'username', 
+            'email', 
+            'first_name', 
+            'last_name', 
+            'bio', 
+            'role'
+        )
 
 
 class IsNotAdminUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("username", "email", "first_name", "last_name", "bio", "role")
-        read_only_fields = ("role",)
+        fields = (
+            'username', 
+            'email', 
+            'first_name', 
+            'last_name', 
+            'bio', 
+            'role'
+        )
+        read_only_fields = ('role',)

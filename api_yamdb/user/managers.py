@@ -9,7 +9,11 @@ class UserManager(models.UserManager):
         return user
 
     def create_superuser(self, email, password, last_login=None, **kwargs):
-        user = self.model(email=email, is_staff=True, is_superuser=True, **kwargs)
+        user = self.model(
+            email=email,
+            is_staff=True,
+            is_superuser=True,
+            **kwargs)
         user.set_password(password)
         user.save()
         return user
