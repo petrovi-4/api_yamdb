@@ -1,9 +1,10 @@
-import datetime
-from django.core.validators import MaxValueValidator
+from django.utils import timezone
+from django.core.exceptions import ValidationError
 
 
 def max_value_current_year(value):
-    def current_year():
-        return datetime.date.today().year
+    current_year = timezone.now().year
+    if value > current_year:
+        raise ValidationError('Год не может быть больше нынешнего.')
+    return value
 
-    return MaxValueValidator(current_year())(value)
