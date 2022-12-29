@@ -62,6 +62,7 @@ class Title(models.Model):
         max_length=256, verbose_name='Название произведения'
     )
     year = models.PositiveSmallIntegerField(
+        db_index=True,
         verbose_name='Год создания',
         validators=[MinValueValidator(0), max_value_current_year],
     )
