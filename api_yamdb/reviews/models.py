@@ -14,9 +14,7 @@ class Category(models.Model):
 
     name = models.CharField(max_length=256, verbose_name='Название категории')
     slug = models.SlugField(
-        unique=True,
         primary_key=True,
-        db_index=True,
         max_length=50,
         verbose_name='Слаг категории'
     )
@@ -35,9 +33,7 @@ class Genre(models.Model):
 
     name = models.CharField(max_length=256, verbose_name='Название категории')
     slug = models.SlugField(
-        unique=True,
         primary_key=True,
-        db_index=True,
         max_length=50,
         verbose_name='Слаг жанра'
     )
