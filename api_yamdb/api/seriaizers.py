@@ -64,7 +64,7 @@ class TitleCreateSerializer(serializers.ModelSerializer):
         model = Title
 
         def validate_year(self, value):
-            year_now = datetime.now().year
+            year_now = timezone.now().year
             if value <= 0 or value > year_now:
                 raise serializers.ValidationError(
                     'Год создания должен быть нашей эры и не больше текущего.'
