@@ -16,8 +16,9 @@ class Category(models.Model):
     slug = models.SlugField(
         unique=True,
         primary_key=True,
+        db_index=True,
         max_length=50,
-        verbose_name='Слаг категории',
+        verbose_name='Слаг категории'
     )
 
     class Meta:
@@ -34,7 +35,11 @@ class Genre(models.Model):
 
     name = models.CharField(max_length=256, verbose_name='Название категории')
     slug = models.SlugField(
-        unique=True, primary_key=True, max_length=50, verbose_name='Слаг жанра'
+        unique=True,
+        primary_key=True,
+        db_index=True,
+        max_length=50,
+        verbose_name='Слаг жанра'
     )
 
     class Meta:
@@ -50,9 +55,15 @@ class Title(models.Model):
     """Модель произведения"""
 
     name = models.CharField(
-        max_length=256, verbose_name='Название произведения'
+        max_length=256,
+        db_index=True,
+        verbose_name='Название произведения'
     )
-    year = models.IntegerField('год', validators=(max_value_current_year,))
+    year = models.IntegerField(
+        db_index=True,
+        validators=(max_value_current_year,),
+        verbose_name='Год'
+    )
     description = models.TextField(
         verbose_name='Описание произведения',
         blank=True,
