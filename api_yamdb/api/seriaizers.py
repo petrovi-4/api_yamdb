@@ -14,8 +14,8 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ("name", "slug")
-        lookup_field = "slug"
+        exclude = ('id',)
+        lookup_field = 'slug'
 
 
 class GenreSerializer(serializers.ModelSerializer):
@@ -23,8 +23,8 @@ class GenreSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Genre
-        fields = ("name", "slug")
-        lookup_field = "slug"
+        fields = ('name', 'slug')
+        lookup_field = 'slug'
 
 
 class TitleSerializer(serializers.ModelSerializer):
@@ -41,13 +41,13 @@ class TitleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Title
         fields = (
-            "id",
-            "name",
-            "year",
-            "rating",
-            "description",
-            "genre",
-            "category",
+            'id',
+            'name',
+            'year',
+            'rating',
+            'description',
+            'genre',
+            'category',
         )
 
 
@@ -75,34 +75,34 @@ class TitleCreateSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True,
-        slug_field="username",
+        slug_field='username',
         default=serializers.CurrentUserDefault(),
     )
 
     class Meta:
-        fields = ("id", "text", "author", "pub_date")
+        fields = ('id', 'text', 'author', 'pub_date')
         model = Comment
 
 
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
-        read_only=True, slug_field="username"
+        read_only=True, slug_field='username'
     )
 
     def validate(self, data):
-        request = self.context["request"]
+        request = self.context['request']
         author = request.user
-        title_id = self.context["view"].kwargs.get("title_id")
+        title_id = self.context['view'].kwargs.get('title_id')
         title = get_object_or_404(Title, pk=title_id)
         if (
-                request.method == "POST"
-                and Review.objects.filter(title=title, author=author).exists()
+            request.method == 'POST'
+            and Review.objects.filter(title=title, author=author).exists()
         ):
             raise serializers.ValidationError(
-                "Вы уже оставили свой отзыв к этому призведению!"
+                'Вы уже оставили свой отзыв к этому призведению!'
             )
         return data
 
     class Meta:
-        fields = ("id", "author", "text", "score", "pub_date")
+        fields = ('id', 'author', 'text', 'score', 'pub_date')
         model = Review
