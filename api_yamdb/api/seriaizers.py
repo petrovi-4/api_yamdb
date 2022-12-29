@@ -8,13 +8,15 @@ from reviews.models import Category, Comment, Genre, Review, Title
 
 User = get_user_model()
 
+# В моделиях Category и Genre сменил ключевое поле на 'slug',
+# поскольку оно итак уникальное. Поле 'id' теперь отсутствует.
 
 class CategorySerializer(serializers.ModelSerializer):
     """Сериализатор категорий"""
 
     class Meta:
         model = Category
-        exclude = ('id',)
+        fields = ('name', 'slug')
         lookup_field = 'slug'
 
 
