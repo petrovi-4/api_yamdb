@@ -36,7 +36,9 @@ class User(AbstractUser):
     last_name = models.CharField(
         max_length=150, blank=True, verbose_name="Фамилия пользователя"
     )
-    bio = models.CharField(max_length=100, verbose_name="Биография", blank=True)
+    bio = models.CharField(
+        max_length=100, verbose_name="Биография", blank=True
+    )
     role = models.CharField(
         max_length=100, verbose_name="Роль", choices=ROLES, default=USER
     )

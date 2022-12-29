@@ -62,7 +62,9 @@ def get_jwt(request):
         try:
             user = User.objects.get(username=username)
         except User.DoesNotExist:
-            return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                serializer.errors, status=status.HTTP_404_NOT_FOUND
+            )
         if check_password(confirmation_code, user.confirmation_code):
             token = AccessToken.for_user(user)
             user.confirmation_code = 0
@@ -113,5 +115,9 @@ class UserViewSet(viewsets.ModelViewSet):
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response("Вы не авторизованы", status=status.HTTP_401_UNAUTHORIZED)
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
+        return Response(
+            "Вы не авторизованы", status=status.HTTP_401_UNAUTHORIZED
+        )

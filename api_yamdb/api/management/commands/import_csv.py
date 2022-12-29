@@ -17,7 +17,7 @@ FILE_MODEL = {
     'genre_title.csv': GenreTitle,
     'users.csv': User,
     'review.csv': Review,
-    'comments.csv': Comment
+    'comments.csv': Comment,
 }
 
 
@@ -44,8 +44,10 @@ class Command(BaseCommand):
         except Exception as error:
             self.stdout.write(
                 self.style.ERROR(
-                    (f'Возникла ошибка при загрузке данных'
-                     f' из файла {file_name}: {error}')
+                    (
+                        f'Возникла ошибка при загрузке данных'
+                        f' из файла {file_name}: {error}'
+                    )
                 )
             )
 
