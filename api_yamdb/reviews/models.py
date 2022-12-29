@@ -84,8 +84,6 @@ class Title(models.Model):
         verbose_name='Категория',
     )
 
-
-
     class Meta:
         ordering = ['id']
         verbose_name = 'Произведение'
