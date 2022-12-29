@@ -8,9 +8,15 @@ from rest_framework.pagination import (
 from reviews.models import Category, Genre, Review, Title
 from user.permissions import IsAdminOrReadOnly, IsAuthorOrModeratorOrAdmin
 from .filters import TitleFilter
-from .seriaizers import (CategorySerializer, CommentSerializer, GenreSerializer,
-                         ReviewSerializer, TitleCreateSerializer,
-                         TitleSerializer)
+from .mixins import ModelMixinSet
+from .seriaizers import (
+    CategorySerializer,
+    CommentSerializer,
+    GenreSerializer,
+    ReviewSerializer,
+    TitleCreateSerializer,
+    TitleSerializer,
+)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -35,21 +41,15 @@ class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
 
     def get_queryset(self):
-        title_id = self.kwargs.get('title_id')
-        review_queryset = Review.objects.filter(title=title_id)
-        return review_queryset
+        title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
+        return title.reviews.all()
 
     def perform_create(self, serializer):
-        title_id = self.kwargs.get('title_id')
-        serializer.save(author=self.request.user, title_id=title_id)
+        title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
+        serializer.save(author=self.request.user, title=title)
 
 
-class CategoryViewSet(
-    viewsets.GenericViewSet,
-    mixins.ListModelMixin,
-    mixins.CreateModelMixin,
-    mixins.DestroyModelMixin,
-):
+class CategoryViewSet(ModelMixinSet):
     """Вьюсет категорий"""
 
     queryset = Category.objects.all()
@@ -89,8 +89,8 @@ class TitleViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         if self.request.method in (
-                'POST',
-                'PATCH',
+            'POST',
+            'PATCH',
         ):
             return TitleCreateSerializer
         return TitleSerializer

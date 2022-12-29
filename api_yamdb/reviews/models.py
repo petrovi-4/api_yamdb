@@ -12,15 +12,12 @@ user = get_user_model()
 class Category(models.Model):
     """Модель категории произведений"""
 
-    name = models.CharField(
-        max_length=256,
-        verbose_name='Название категории'
-    )
+    name = models.CharField(max_length=256, verbose_name='Название категории')
     slug = models.SlugField(
         unique=True,
         primary_key=True,
         max_length=50,
-        verbose_name='Слаг категории'
+        verbose_name='Слаг категории',
     )
 
     class Meta:
@@ -35,15 +32,9 @@ class Category(models.Model):
 class Genre(models.Model):
     """Модель жанра произведений"""
 
-    name = models.CharField(
-        max_length=256,
-        verbose_name='Название категории'
-    )
+    name = models.CharField(max_length=256, verbose_name='Название категории')
     slug = models.SlugField(
-        unique=True,
-        primary_key=True,
-        max_length=50,
-        verbose_name='Слаг жанра'
+        unique=True, primary_key=True, max_length=50, verbose_name='Слаг жанра'
     )
 
     class Meta:
@@ -61,11 +52,7 @@ class Title(models.Model):
     name = models.CharField(
         max_length=256, verbose_name='Название произведения'
     )
-    year = models.PositiveSmallIntegerField(
-        db_index=True,
-        verbose_name='Год создания',
-        validators=[MinValueValidator(0), max_value_current_year],
-    )
+    year = models.IntegerField('год', validators=(max_value_current_year,))
     description = models.TextField(
         verbose_name='Описание произведения',
         blank=True,
@@ -120,7 +107,7 @@ class Review(models.Model):
         related_name='reviews',
         verbose_name='Автор',
     )
-    score = models.SmallIntegerField(
+    score = models.PositiveSmallIntegerField(
         validators=[
             MinValueValidator(0),
             MaxValueValidator(10),

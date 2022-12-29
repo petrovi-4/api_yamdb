@@ -30,7 +30,9 @@ def send_code(request):
         email = request.data.get("email", False)
         username = request.data.get("username", False)
         confirmation_code = "".join(map(str, random.sample(range(10), 6)))
-        user, created = User.objects.get_or_create(username=username, email=email)
+        user, created = User.objects.get_or_create(
+            username=username, email=email
+        )
         user.confirmation_code = make_password(
             confirmation_code, salt=None, hasher="default"
         )
